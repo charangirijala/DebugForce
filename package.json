@@ -1,30 +1,30 @@
 {
-  "name": "my",
-  "version": "0.0.1",
-  "license": "MIT",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "clean": "rimraf node_modules __lwr_cache__ site",
-    "dev": "lwr dev",
-    "dev:compat": "lwr dev --mode compat",
-    "build": "lwr build --clean",
-    "build:prod-compat": "lwr build --clean --mode prod-compat",
-    "start": "lwr start",
-    "stage": "yarn build && yarn start",
-    "stage:prod-compat": "yarn build:prod-compat && yarn start",
-    "copyslds": "node ./scripts/copy-slds.mjs"
-  },
-  "dependencies": {
-    "@salesforce-ux/design-system": "^2.25.6",
-    "lwc": "latest",
-    "lwr": "^0.16.1",
-    "prettier": "^3.4.2"
-  },
-  "engines": {
-    "node": ">=18.0.0"
-  },
-  "volta": {
-    "node": "20.16.0"
-  }
+    "name": "my",
+    "version": "0.0.1",
+    "license": "MIT",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "clean": "rimraf node_modules __lwr_cache__ site",
+        "dev": "lwr dev",
+        "dev:compat": "lwr dev --mode compat",
+        "build": "node ./scripts/copy-slds.mjs && lwr build --clean",
+        "build:prod-compat": "lwr build --clean --mode prod-compat",
+        "start": "lwr start",
+        "stage": "yarn build && yarn start",
+        "stage:prod-compat": "yarn build:prod-compat && yarn start",
+        "copyslds": "node ./scripts/copy-slds.mjs"
+    },
+    "dependencies": {
+        "@salesforce-ux/design-system": "^2.25.6",
+        "lwc": "latest",
+        "lwr": "^0.16.1",
+        "prettier": "^3.4.2"
+    },
+    "engines": {
+        "node": ">=18.0.0"
+    },
+    "volta": {
+        "node": "20.16.0"
+    }
 }
