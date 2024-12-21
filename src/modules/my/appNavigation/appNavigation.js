@@ -26,15 +26,7 @@ export default class AppNavigation extends LightningElement {
                 'navItem slds-context-bar__item slds-shrink-none slds-is-active'
         },
         {
-            label: 'Raw Log Viewer',
-            classCombination: 'navItem slds-context-bar__item slds-shrink-none'
-        },
-        {
-            label: 'Log Analysis',
-            classCombination: 'navItem slds-context-bar__item slds-shrink-none'
-        },
-        {
-            label: 'Detailed Log Viewer',
+            label: 'Log Viewer',
             classCombination: 'navItem slds-context-bar__item slds-shrink-none'
         }
     ];

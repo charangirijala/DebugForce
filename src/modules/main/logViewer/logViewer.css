@@ -403,3 +403,8 @@ th {
 .dashboard-widget {
     background-color: white;
 }
+
+.call-stack {
+    order: 1;
+    margin-right: auto;
+}
