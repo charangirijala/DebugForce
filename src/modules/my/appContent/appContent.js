@@ -42,14 +42,6 @@ export default class AppContent extends LightningElement {
     }
 
     get isRawLogViewer() {
-        return this.activeApp === 'Raw Log Viewer' ? '' : 'slds-hide';
-    }
-
-    get isLogAnalysis() {
-        return this.activeApp === 'Log Analysis' ? '' : 'slds-hide';
-    }
-
-    get isDetailLogViewer() {
-        return this.activeApp === 'Detailed Log Viewer' ? '' : 'slds-hide';
+        return this.activeApp === 'Log Viewer' ? '' : 'slds-hide';
     }
 }
