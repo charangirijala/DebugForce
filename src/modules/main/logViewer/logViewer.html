@@ -1,0 +1,883 @@
+<template>
+    <div class="slds-hide">{reRenderVal}</div>
+    <div class="reportView">
+        <div class="reportBuilderContainer">
+            <div class="reportBuilder reportBuilder-view hide-settings-footer">
+                <div class="edge-builder-ii">
+                    <div class="dashboard-container with-header">
+                        <div class="slds-page-header report-header">
+                            <div class="slds-page-header__row">
+                                <div class="slds-page-header__col-title">
+                                    <div class="slds-media">
+                                        <div class="slds-media__figure">
+                                            <span
+                                                class="slds-icon_container slds-icon-standard-report"
+                                                ><svg
+                                                    aria-hidden="true"
+                                                    class="slds-page-header__icon slds-icon"
+                                                    viewBox="0 0 100 100"
+                                                >
+                                                    <path
+                                                        d="M39 32h22c1.1 0 2-.9 2-2v-4c0-3.3-2.7-6-6-6H43c-3.3 0-6 2.7-6 6v4c0 1.1.9 2 2 2z"
+                                                    ></path>
+                                                    <path
+                                                        d="M72 25h-2c-.6 0-1 .4-1 1v4c0 4.4-3.6 8-8 8H39c-4.4 0-8-3.6-8-8v-4c0-.6-.4-1-1-1h-2c-3.3 0-6 2.7-6 6v43c0 3.3 2.7 6 6 6h44c3.3 0 6-2.7 6-6V31c0-3.3-2.7-6-6-6zM43 66c0 1.1-.9 2-2 2h-2c-1.1 0-2-.9-2-2V56c0-1.1.9-2 2-2h2c1.1 0 2 .9 2 2v10zm10 0c0 1.1-.9 2-2 2h-2c-1.1 0-2-.9-2-2V47c0-1.1.9-2 2-2h2c1.1 0 2 .9 2 2v19zm10 0c0 1.1-.9 2-2 2h-2c-1.1 0-2-.9-2-2V51c0-1.1.9-2 2-2h2c1.1 0 2 .9 2 2v15z"
+                                                    ></path></svg
+                                                ><span
+                                                    class="slds-assistive-text"
+                                                    >Report: Accounts</span
+                                                ></span
+                                            >
+                                        </div>
+                                        <div class="slds-media__body">
+                                            <div class="slds-page-header__name">
+                                                <div
+                                                    class="slds-page-header__name-title"
+                                                >
+                                                    <h1>
+                                                        <span>Log Viewer</span
+                                                        ><span
+                                                            class="slds-page-header__title slds-truncate"
+                                                            title="New Accounts Report"
+                                                            >{fileMetadata.fileName}</span
+                                                        >
+                                                    </h1>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div
+                                    class="slds-page-header__col-actions slds-align-middle slds-p-bottom_none"
+                                >
+                                    <div class="slds-page-header__controls">
+                                        <div class="slds-page-header__control">
+                                            <div class="action-bars">
+                                                <div
+                                                    class="slds-m-left--xx-small"
+                                                >
+                                                    <div
+                                                        class="slds-button-group actionBarButtonGroup"
+                                                        role="group"
+                                                    >
+                                                        <button
+                                                            class="slds-button slds-button_neutral action-bar-action-inlineEditReport reportAction report-action-inlineEditReport filtersButton"
+                                                            type="button"
+                                                        >
+                                                            <svg
+                                                                aria-hidden="true"
+                                                                class="slds-button__icon slds-button__icon_left"
+                                                                viewBox="0 0 52 52"
+                                                            >
+                                                                <g>
+                                                                    <path
+                                                                        d="M9.5 33.4l8.9 8.9c.4.4 1 .4 1.4 0L42 20c.4-.4.4-1 0-1.4l-8.8-8.8c-.4-.4-1-.4-1.4 0L9.5 32.1c-.4.4-.4 1 0 1.3zM36.1 5.7c-.4.4-.4 1 0 1.4l8.8 8.8c.4.4 1 .4 1.4 0l2.5-2.5c1.6-1.5 1.6-3.9 0-5.5l-4.7-4.7c-1.6-1.6-4.1-1.6-5.7 0l-2.3 2.5zM2.1 48.2c-.2 1 .7 1.9 1.7 1.7l10.9-2.6c.4-.1.7-.3.9-.5l.2-.2c.2-.2.3-.9-.1-1.3l-9-9c-.4-.4-1.1-.3-1.3-.1l-.2.2c-.3.3-.4.6-.5.9L2.1 48.2z"
+                                                                    ></path>
+                                                                </g></svg
+                                                            >Enable Field
+                                                            Editing
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="slds-m-left--xx-small"
+                                                >
+                                                    <div
+                                                        class="slds-button-group actionBarButtonGroup"
+                                                        id="EkjCGIs38w"
+                                                        role="group"
+                                                    >
+                                                        <div
+                                                            class="slds-tooltip-trigger"
+                                                            style="
+                                                                display: inline-block;
+                                                                line-height: 1;
+                                                            "
+                                                        >
+                                                            <div>
+                                                                <div
+                                                                    role="button"
+                                                                    tabindex="-1"
+                                                                >
+                                                                    <button
+                                                                        class="slds-button slds-button_icon-border action-bar-action-searchTable reportAction report-action-searchTable filtersButton"
+                                                                        type="button"
+                                                                    >
+                                                                        <svg
+                                                                            aria-hidden="true"
+                                                                            class="slds-button__icon"
+                                                                            viewBox="0 0 52 52"
+                                                                        >
+                                                                            <path
+                                                                                d="M49.62 45.27L36.22 32a18.9 18.9 0 10-34.1-9.2A18.91 18.91 0 0032 36.27l13.3 13.3a1.45 1.45 0 002.1 0l2.1-2.1a1.68 1.68 0 00.12-2.2zm-28.7-11.5a12.9 12.9 0 1112.9-12.9 12.87 12.87 0 01-12.9 12.9z"
+                                                                                fill-rule="evenodd"
+                                                                            ></path></svg
+                                                                        ><span
+                                                                            class="slds-assistive-text"
+                                                                            >Search
+                                                                            report
+                                                                            table</span
+                                                                        >
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                            <span></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="slds-m-left--xx-small"
+                                                >
+                                                    <div
+                                                        class="slds-button-group actionBarButtonGroup"
+                                                        role="group"
+                                                    >
+                                                        <button
+                                                            class="slds-button slds-button_neutral action-bar-action-addChart reportAction report-action-addChart filtersButton action-bar-sprite-button"
+                                                            disabled=""
+                                                            type="button"
+                                                        >
+                                                            <svg
+                                                                aria-hidden="true"
+                                                                class="slds-button__icon slds-button__icon_left"
+                                                                viewBox="0 0 100 100"
+                                                            >
+                                                                <path
+                                                                    d="M45.2 67.5c-.7-5.7 1.1-11.5 4.9-15.8 3.8-4.3 9.3-6.7 15-6.7.8 0 1.7.1 2.5.2.9.1 1.8.3 2.7.6 1.4.4 2.7-.7 2.5-2.1-1.1-11.9-10-21.5-21.6-23.7-1.6-.3-3.2 1-3.2 2.6v22.7c0 1.5-1.2 2.7-2.7 2.7H22.7c-1.7 0-2.9 1.5-2.6 3.2 2.2 11.5 11.7 20.4 23.6 21.6 1.4.1 2.5-1.2 2.1-2.5-.3-.9-.5-1.9-.6-2.8z"
+                                                                ></path>
+                                                                <path
+                                                                    d="M43.5 40.8V22.7c0-1.7-1.5-2.9-3.2-2.6-10.8 2-18.3 9.5-20.3 20.3-.3 1.6 1 3.2 2.6 3.2h18.2c1.5-.1 2.7-1.3 2.7-2.8zm36.4 22.3c-.8-6.6-6.2-12-12.9-12.9-.6-.1-1.3-.1-1.9-.1-8.9 0-16 7.7-14.9 16.9.8 6.7 6.2 12.1 12.9 12.9.6.1 1.3.1 1.9.1 8.9 0 16-7.7 14.9-16.9zm-7.6 3.1c0 .7-.5 1.2-1.2 1.2h-3.6v3.8c0 .7-.5 1.2-1.2 1.2h-2.5c-.7 0-1.2-.5-1.2-1.2v-3.7h-3.7c-.7 0-1.2-.5-1.2-1.2v-2.5c0-.7.5-1.2 1.2-1.2h3.6v-3.7c0-.7.5-1.2 1.2-1.2h2.5c.7 0 1.2.5 1.2 1.2v3.7h3.7c.7 0 1.2.5 1.2 1.2v2.4z"
+                                                                ></path></svg
+                                                            >Add Chart
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="slds-m-left--xx-small"
+                                                >
+                                                    <div
+                                                        class="slds-button-group actionBarButtonGroup"
+                                                        role="group"
+                                                    >
+                                                        <div
+                                                            class="slds-tooltip-trigger"
+                                                            style="
+                                                                display: inline-block;
+                                                                line-height: 1;
+                                                            "
+                                                        >
+                                                            <div>
+                                                                <div
+                                                                    role="button"
+                                                                    tabindex="-1"
+                                                                >
+                                                                    <button
+                                                                        aria-pressed="false"
+                                                                        aria-controls="filterPanel"
+                                                                        aria-expanded="false"
+                                                                        class="action-bar-action-toggleFilter reportAction report-action-toggleFilter filtersButton slds-button slds-not-selected slds-button_icon-border"
+                                                                        type="button"
+                                                                        onclick={openFilter}
+                                                                    >
+                                                                        <svg
+                                                                            aria-hidden="true"
+                                                                            class="slds-button__icon slds-button__icon_stateful"
+                                                                            viewBox="0 0 52 52"
+                                                                        >
+                                                                            <path
+                                                                                d="M48.3 4H3.9C2.4 4 1.7 5.7 2.6 6.8L22 29.5c.6.7.9 1.7.9 2.6v14.4c0 .8.8 1.5 1.6 1.5h3c.8 0 1.4-.7 1.4-1.5V32.1c0-1 .4-1.9 1.1-2.6L49.6 6.8c.9-1.1.2-2.8-1.3-2.8z"
+                                                                            ></path></svg
+                                                                        ><span
+                                                                            class="slds-assistive-text"
+                                                                            >Filters</span
+                                                                        >
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                            <span></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="slds-m-left--xx-small"
+                                                >
+                                                    <div
+                                                        class="slds-button-group actionBarButtonGroup"
+                                                        id="QXuKFQV-L9"
+                                                        role="group"
+                                                    >
+                                                        <div
+                                                            class="slds-tooltip-trigger"
+                                                            style="
+                                                                display: inline-block;
+                                                                line-height: 1;
+                                                            "
+                                                        >
+                                                            <div>
+                                                                <div
+                                                                    role="button"
+                                                                    tabindex="-1"
+                                                                >
+                                                                    <button
+                                                                        class="slds-button slds-button_icon-border action-bar-action-refreshReport reportAction report-action-refreshReport filtersButton"
+                                                                        type="button"
+                                                                    >
+                                                                        <svg
+                                                                            aria-hidden="true"
+                                                                            class="slds-button__icon"
+                                                                            viewBox="0 0 52 52"
+                                                                        >
+                                                                            <path
+                                                                                d="M46.5 4h-3c-.8 0-1.5.7-1.5 1.5v7c0 .9-.5 1.3-1.2.7-.3-.4-.6-.7-1-1-5-5-12-7.1-19.2-5.7-2.5.5-4.9 1.5-7 2.9-6.1 4-9.6 10.5-9.7 17.5-.1 5.4 2 10.8 5.8 14.7 4 4.2 9.4 6.5 15.2 6.5 5.1 0 9.9-1.8 13.7-5 .7-.6.7-1.6.1-2.2l-2.1-2.1c-.5-.5-1.4-.6-2-.1-3.6 3-8.5 4.2-13.4 3-1.3-.3-2.6-.9-3.8-1.6C11.7 36.6 9 30 10.6 23.4c.3-1.3.9-2.6 1.6-3.8C15 14.7 19.9 12 25.1 12c4 0 7.8 1.6 10.6 4.4.5.4.9.9 1.2 1.4.3.8-.4 1.2-1.3 1.2h-7c-.8 0-1.5.7-1.5 1.5v3.1c0 .8.6 1.4 1.4 1.4h18.3c.7 0 1.3-.6 1.3-1.3V5.5C48 4.7 47.3 4 46.5 4z"
+                                                                            ></path></svg
+                                                                        ><span
+                                                                            class="slds-assistive-text"
+                                                                            >Refresh</span
+                                                                        >
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                            <span></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="slds-m-left--xx-small"
+                                                >
+                                                    <div
+                                                        class="slds-button-group actionBarButtonGroup"
+                                                        id="bgBHqCaUPy"
+                                                        role="group"
+                                                    >
+                                                        <button
+                                                            class="slds-button slds-button_neutral action-bar-action-LightningReportEditAction reportAction report-action-LightningReportEditAction filtersButton"
+                                                            type="button"
+                                                        >
+                                                            Edit
+                                                        </button>
+                                                        <div
+                                                            class="slds-dropdown-trigger slds-dropdown-trigger_click slds-button_last"
+                                                            id="MDNrlq4E6E"
+                                                        >
+                                                            <button
+                                                                class="slds-button slds-button_icon-border ignore-click-MDNrlq4E6E more-actions-button"
+                                                                tabindex="0"
+                                                                type="button"
+                                                                aria-expanded="false"
+                                                                aria-haspopup="true"
+                                                            >
+                                                                <svg
+                                                                    aria-hidden="true"
+                                                                    class="slds-button__icon"
+                                                                    viewBox="0 0 52 52"
+                                                                >
+                                                                    <path
+                                                                        d="M8.3 14h35.4c1 0 1.7 1.3.9 2.2L27.3 37.4c-.6.8-1.9.8-2.5 0L7.3 16.2c-.7-.9-.1-2.2 1-2.2z"
+                                                                    ></path></svg
+                                                                ><span
+                                                                    class="slds-assistive-text"
+                                                                    >More
+                                                                    Actions</span
+                                                                >
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="slds-page-header__row">
+                                <div class="slds-page-header__col-meta"></div>
+                            </div>
+                        </div>
+                        <div
+                            class="dashboard-builder-body dashboard-show-header"
+                        >
+                            <div class="dashboard-builder-body-fill">
+                                <div class="dashboard-builder-body-content">
+                                    <div class="dashboard-grid-container">
+                                        <div class="layout-outer-container">
+                                            <div
+                                                class="layout-inner-container"
+                                                style="
+                                                    background-color: rgb(
+                                                        255,
+                                                        255,
+                                                        255
+                                                    );
+                                                    overflow-y: auto;
+                                                "
+                                            >
+                                                <div
+                                                    class="grid-layout-container"
+                                                    style="min-width: 480px"
+                                                >
+                                                    <div
+                                                        class="grid-layout"
+                                                        tabindex="-1"
+                                                        style="
+                                                            background-color: rgb(
+                                                                255,
+                                                                255,
+                                                                255
+                                                            );
+                                                            background-position: left
+                                                                top;
+                                                            background-size: auto;
+                                                        "
+                                                    >
+                                                        <div
+                                                            class="widget-grid"
+                                                        >
+                                                            <div
+                                                                class="widgets"
+                                                                style={dynamicHeight}
+                                                            >
+                                                                <!-- Filter Panel -->
+                                                                <div
+                                                                    class={filterClass}
+                                                                >
+                                                                    <template
+                                                                        if:true={ShowFilterSave}
+                                                                    >
+                                                                        <div
+                                                                            class="filter-header-btn-container"
+                                                                        >
+                                                                            <button
+                                                                                type="button"
+                                                                                class="slds-button slds-button_neutral"
+                                                                                onclick={cancelFilterEdit}
+                                                                            >
+                                                                                Cancel
+                                                                            </button>
+                                                                            <button
+                                                                                type="button"
+                                                                                class="slds-button slds-button_brand"
+                                                                                onclick={saveFilterEdit}
+                                                                            >
+                                                                                Save
+                                                                            </button>
+                                                                        </div>
+                                                                    </template>
+                                                                    <template
+                                                                        if:true={isFilterPopOverShowing}
+                                                                    >
+                                                                        <section
+                                                                            class="slds-popover popover-section slds-nubbin_right"
+                                                                            role="dialog"
+                                                                        >
+                                                                            <div
+                                                                                class="filterPanel"
+                                                                            >
+                                                                                <!-- <lightning-combobox
+                                                                                    name="Field"
+                                                                                    label="Field"
+                                                                                    value={fieldValue}
+                                                                                    placeholder="Select Field"
+                                                                                    options={fieldOptions}
+                                                                                    onchange={handleFieldChange}
+                                                                                ></lightning-combobox> -->
+                                                                                <ui-multi-select-combobox
+                                                                                    label="Field"
+                                                                                    name="Field"
+                                                                                    placeholder="Select Field"
+                                                                                    options={fieldOptions}
+                                                                                    onclose={handleFieldChange}
+                                                                                    single-select
+                                                                                ></ui-multi-select-combobox>
+                                                                                <!-- <lightning-combobox
+                                                                                    name="Operator"
+                                                                                    label="Operator"
+                                                                                    value={operatorValue}
+                                                                                    placeholder="Select Operator"
+                                                                                    options={operatorOptions}
+                                                                                    onchange={handleOperatorChange}
+                                                                                ></lightning-combobox> -->
+                                                                                <ui-multi-select-combobox
+                                                                                    label="Operator"
+                                                                                    name="Operator"
+                                                                                    placeholder="Select Operator"
+                                                                                    options={operatorOptions}
+                                                                                    onclose={handleOperatorChange}
+                                                                                    single-select
+                                                                                ></ui-multi-select-combobox>
+                                                                                <template
+                                                                                    if:true={isFilterValuePicklist}
+                                                                                >
+                                                                                    <ui-multi-select-combobox
+                                                                                        label="Value"
+                                                                                        name="Value"
+                                                                                        options={filterValueOptions}
+                                                                                        single-select
+                                                                                        onclose={handleFilterValueChange}
+                                                                                    ></ui-multi-select-combobox>
+                                                                                </template>
+                                                                                <template
+                                                                                    if:false={isFilterValuePicklist}
+                                                                                >
+                                                                                    <ui-input
+                                                                                        label="Value"
+                                                                                        type="text"
+                                                                                        minimum-length="2"
+                                                                                        text-value={filterValue}
+                                                                                        onvalchange={handleFilterTextChange}
+                                                                                    ></ui-input>
+                                                                                    <!-- <lightning-input
+                                                                                        type="text"
+                                                                                        label="Value"
+                                                                                        minlength="3"
+                                                                                        value={filterValue}
+                                                                                        onchange={handleFilterTextChange}
+                                                                                    ></lightning-input> -->
+                                                                                </template>
+
+                                                                                <div
+                                                                                    class="float-right slds-var-p-bottom_medium"
+                                                                                >
+                                                                                    <button
+                                                                                        type="button"
+                                                                                        class="slds-button slds-button_neutral slds-var-m-top_medium"
+                                                                                        onclick={handlePopoverClose}
+                                                                                    >
+                                                                                        <span
+                                                                                            >Done</span
+                                                                                        >
+                                                                                    </button>
+                                                                                </div>
+                                                                            </div>
+                                                                        </section>
+                                                                    </template>
+                                                                    <div
+                                                                        class="slds-panel__header"
+                                                                    >
+                                                                        <h2
+                                                                            class="slds-panel__header-title slds-text-heading_small slds-truncate"
+                                                                            title="Filters"
+                                                                        >
+                                                                            Filters
+                                                                        </h2>
+                                                                        <div
+                                                                            class="slds-panel__header-actions"
+                                                                        >
+                                                                            <button
+                                                                                class="slds-button slds-button_icon slds-button_icon-small slds-panel__close"
+                                                                                title="Collapse Filter"
+                                                                                onclick={closeFilter}
+                                                                            >
+                                                                                <svg
+                                                                                    class="slds-button__icon"
+                                                                                    aria-hidden="true"
+                                                                                >
+                                                                                    <use
+                                                                                        xlink:href="SLDS/icons/utility-sprite/svg/symbols.svg#close"
+                                                                                    ></use>
+                                                                                </svg>
+                                                                                <span
+                                                                                    class="slds-assistive-text"
+                                                                                    >Collapse
+                                                                                    Filter</span
+                                                                                >
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div
+                                                                        class="slds-panel__body panelbody"
+                                                                    >
+                                                                        <div
+                                                                            class="slds-filters"
+                                                                        >
+                                                                            <ol
+                                                                                class="slds-list_vertical slds-list_vertical-space"
+                                                                            >
+                                                                                <li
+                                                                                    class="slds-item slds-hint-parent"
+                                                                                >
+                                                                                    <div
+                                                                                        class="slds-filters__item slds-grid slds-grid_vertical-align-center"
+                                                                                    >
+                                                                                        <button
+                                                                                            class="slds-button_reset slds-grow slds-has-blur-focus"
+                                                                                        >
+                                                                                            <span
+                                                                                                class="slds-assistive-text"
+                                                                                                >Edit
+                                                                                                filter:</span
+                                                                                            >
+                                                                                            <span
+                                                                                                class="slds-show slds-text-body_small"
+                                                                                                >Show
+                                                                                                Me</span
+                                                                                            >
+                                                                                            <span
+                                                                                                class="slds-show"
+                                                                                                >All
+                                                                                                Lines</span
+                                                                                            >
+                                                                                        </button>
+                                                                                    </div>
+                                                                                </li>
+                                                                            </ol>
+                                                                            <template
+                                                                                if:true={hasActiveFilters}
+                                                                            >
+                                                                                <h3
+                                                                                    class="slds-text-body_small slds-m-vertical_x-small"
+                                                                                >
+                                                                                    Matching
+                                                                                    all
+                                                                                    these
+                                                                                    filters
+                                                                                </h3>
+                                                                                <ol
+                                                                                    class="slds-list_vertical slds-list_vertical-space"
+                                                                                >
+                                                                                    <template
+                                                                                        for:each={activeFilters}
+                                                                                        for:item="filter"
+                                                                                    >
+                                                                                        <li
+                                                                                            class="slds-item slds-hint-parent"
+                                                                                            key={filter.id}
+                                                                                        >
+                                                                                            <div
+                                                                                                class={filter.filterItemClass}
+                                                                                            >
+                                                                                                <button
+                                                                                                    class="slds-button_reset slds-grow slds-has-blur-focus"
+                                                                                                    onclick={onFilterElementClick}
+                                                                                                    data-id={filter.id}
+                                                                                                >
+                                                                                                    <span
+                                                                                                        class="slds-show slds-text-body_small"
+                                                                                                        >{filter.field}</span
+                                                                                                    >
+
+                                                                                                    <template
+                                                                                                        if:true={filter.isPicklist}
+                                                                                                    >
+                                                                                                        <span
+                                                                                                            class="slds-show filter-body"
+                                                                                                            >{filter.operator}
+                                                                                                            {filter.filterValues}</span
+                                                                                                        >
+                                                                                                    </template>
+                                                                                                    <template
+                                                                                                        if:false={filter.isPicklist}
+                                                                                                    >
+                                                                                                        <span
+                                                                                                            class="slds-show filter-body"
+                                                                                                            >{filter.operator}
+                                                                                                            {filter.value}</span
+                                                                                                        >
+                                                                                                    </template>
+                                                                                                </button>
+                                                                                                <button
+                                                                                                    class="slds-button slds-button_icon slds-button_icon slds-button_icon-small"
+                                                                                                    title="Remove Filter"
+                                                                                                    data-id={filter.id}
+                                                                                                    onclick={removeFilter}
+                                                                                                >
+                                                                                                    <svg
+                                                                                                        class="slds-button__icon slds-button__icon_hint"
+                                                                                                        aria-hidden="true"
+                                                                                                    >
+                                                                                                        <use
+                                                                                                            xlink:href="SLDS/icons/utility-sprite/svg/symbols.svg#delete"
+                                                                                                        ></use>
+                                                                                                    </svg>
+                                                                                                </button>
+                                                                                            </div>
+                                                                                        </li>
+                                                                                    </template>
+                                                                                </ol>
+                                                                            </template>
+                                                                            <div
+                                                                                class="slds-filters__footer slds-grid slds-shrink-none"
+                                                                            >
+                                                                                <button
+                                                                                    class="slds-button_reset slds-text-link"
+                                                                                    onclick={addFilter}
+                                                                                >
+                                                                                    Add
+                                                                                    Filter
+                                                                                </button>
+                                                                                <button
+                                                                                    class="slds-button_reset slds-text-link slds-col_bump-left"
+                                                                                    onclick={removeAllFilters}
+                                                                                >
+                                                                                    Remove
+                                                                                    All
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div
+                                                                    class="widget-container widget-container_scroll-container"
+                                                                >
+                                                                    <div
+                                                                        draggable="false"
+                                                                        class="widget"
+                                                                    >
+                                                                        <div
+                                                                            class="dashboard-widget css-13udsys"
+                                                                        >
+                                                                            <div
+                                                                                class="containerWidget container-widget background-image widgetReady finalState"
+                                                                                style="
+                                                                                    background-position: left
+                                                                                        top;
+                                                                                    background-size: auto;
+                                                                                    background-color: rgb(
+                                                                                        255,
+                                                                                        255,
+                                                                                        255
+                                                                                    );
+                                                                                    border-radius: 0px;
+                                                                                "
+                                                                            >
+                                                                                <span
+                                                                                    class="image"
+                                                                                    aria-label=""
+                                                                                    style="
+                                                                                        display: block;
+                                                                                    "
+                                                                                ></span>
+                                                                                <div
+                                                                                    class="widgets-inner"
+                                                                                >
+                                                                                    <div
+                                                                                        class="widget-container widget-container_reportMetrics"
+                                                                                    >
+                                                                                        <div
+                                                                                            draggable="false"
+                                                                                            class="widget contained-widget"
+                                                                                        >
+                                                                                            <div
+                                                                                                class="dashboard-widget css-13udsys"
+                                                                                            >
+                                                                                                <div
+                                                                                                    class="metrics-widget widgetReady finalState"
+                                                                                                >
+                                                                                                    <!-- Metrics before table -->
+                                                                                                    <ul>
+                                                                                                        <li>
+                                                                                                            <div
+                                                                                                                class="metricsElement metricsTitle"
+                                                                                                                title="Total Records"
+                                                                                                            >
+                                                                                                                Total
+                                                                                                                Lines
+                                                                                                            </div>
+                                                                                                            <div
+                                                                                                                class="metricsElement metricsValue"
+                                                                                                            >
+                                                                                                                {fileMetadata.nofLines}
+                                                                                                            </div>
+                                                                                                        </li>
+                                                                                                        <li>
+                                                                                                            <div
+                                                                                                                class="metricsElement metricsTitle"
+                                                                                                                title="Total Annual Revenue"
+                                                                                                            >
+                                                                                                                Total
+                                                                                                                CodeUnits
+                                                                                                            </div>
+                                                                                                            <div
+                                                                                                                class="metricsElement metricsValue"
+                                                                                                            >
+                                                                                                                {fileMetadata.nofCodeUnits}
+                                                                                                            </div>
+                                                                                                        </li>
+                                                                                                        <li>
+                                                                                                            <div
+                                                                                                                class="metricsElement metricsTitle"
+                                                                                                                title="Total Partner Account"
+                                                                                                            >
+                                                                                                                Total
+                                                                                                                MethodUnits
+                                                                                                            </div>
+                                                                                                            <div
+                                                                                                                class="metricsElement metricsValue"
+                                                                                                            >
+                                                                                                                {fileMetadata.nofMethodUnits}
+                                                                                                            </div>
+                                                                                                        </li>
+                                                                                                        <li>
+                                                                                                            <div
+                                                                                                                class="metricsElement metricsTitle"
+                                                                                                                title="Total Contact Count"
+                                                                                                            >
+                                                                                                                Total
+                                                                                                                Contact
+                                                                                                                Count
+                                                                                                            </div>
+                                                                                                            <div
+                                                                                                                class="metricsElement metricsValue"
+                                                                                                            >
+                                                                                                                0
+                                                                                                            </div>
+                                                                                                        </li>
+                                                                                                    </ul>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <table>
+                                                                                        <tr>
+                                                                                            <th
+                                                                                                class="line-header"
+                                                                                            ></th>
+                                                                                            <th
+                                                                                                class="line-header"
+                                                                                                style="
+                                                                                                    text-align: left;
+                                                                                                "
+                                                                                            >
+                                                                                                Line
+                                                                                            </th>
+                                                                                        </tr>
+                                                                                        <template
+                                                                                            for:each={displayedData}
+                                                                                            for:item="lineObj"
+                                                                                        >
+                                                                                            <tr
+                                                                                                key={lineObj.lineNumber}
+                                                                                            >
+                                                                                                <td
+                                                                                                    style="
+                                                                                                        text-align: center;
+                                                                                                    "
+                                                                                                >
+                                                                                                    <span
+                                                                                                        class="line-number-text"
+                                                                                                        >{lineObj.lineNumber}</span
+                                                                                                    >
+                                                                                                </td>
+                                                                                                <td>
+                                                                                                    <span
+                                                                                                        class="line-text"
+                                                                                                        >{lineObj.line}</span
+                                                                                                    >
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                        </template>
+                                                                                    </table>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footerContainer">
+        <footer class="slds-utility-bar_container" aria-label="Utility Bar">
+            <ul class="slds-utility-bar utility-bar slds-var-p-around_xx-small">
+                <li class="slds-utility-bar__item">
+                    <button
+                        class="slds-button slds-utility-bar__action"
+                        onclick={handleCallStackChange}
+                    >
+                        <svg
+                            class="slds-button__icon slds-button__icon_left"
+                            aria-hidden="true"
+                        >
+                            <use
+                                xlink:href="SLDS/icons/utility-sprite/svg/symbols.svg#clock"
+                            ></use></svg
+                        ><span class="slds-utility-bar__text">Call Stack</span>
+                    </button>
+                </li>
+                <li
+                    class="slds-utility-bar__item slds-var-p-horizontal_xxx-small utility-bar-input"
+                >
+                    <input
+                        type="text"
+                        value={linesPerPage}
+                        class={linesPerPageClass}
+                        maxlength="4"
+                        inputmode="decimal"
+                        oninput={onLinesPerPageChange}
+                    />
+                </li>
+                <li
+                    class="slds-utility-bar__item slds-var-p-horizontal_xxx-small utility-bar-span-text"
+                >
+                    <span>Lines per page:</span>
+                </li>
+                <li
+                    class="slds-utility-bar__item slds-var-p-horizontal_xxx-small"
+                >
+                    <div class="slds-button-group">
+                        <button
+                            class="slds-button slds-button_icon slds-button_icon-border"
+                            title="Previous Page"
+                            onclick={prevHandler}
+                            tabindex="0"
+                        >
+                            <svg class="slds-button__icon" aria-hidden="true">
+                                <use
+                                    xlink:href="SLDS/icons/utility-sprite/svg/symbols.svg#undo"
+                                ></use></svg
+                            ><span class="slds-assistive-text"
+                                >Previous Page</span
+                            ></button
+                        ><button
+                            class="slds-button slds-button_icon slds-button_icon-border"
+                            title="Next Page"
+                            onclick={nextHandler}
+                        >
+                            <svg class="slds-button__icon" aria-hidden="true">
+                                <use
+                                    xlink:href="SLDS/icons/utility-sprite/svg/symbols.svg#redo"
+                                ></use></svg
+                            ><span class="slds-assistive-text">Next Page</span>
+                        </button>
+                    </div>
+                </li>
+                <li
+                    class="slds-utility-bar__item utility-bar-span-text slds-var-p-horizontal_xxx-small"
+                >
+                    <span>of <strong>{noOfPages}</strong></span>
+                </li>
+                <li
+                    class="slds-utility-bar__item slds-var-p-horizontal_xxx-small utility-bar-input"
+                >
+                    <input
+                        type="text"
+                        value={pageNumber}
+                        class={pageNumberClass}
+                        inputmode="decimal"
+                        oninput={onPageNumberChange}
+                    />
+                </li>
+                <li
+                    class="slds-utility-bar__item utility-bar-span-text slds-var-p-horizontal_xxx-small"
+                >
+                    <span>Page</span>
+                </li>
+            </ul>
+            <!-- utility panel -->
+            <ui-utility-panel
+                panel-toggle={callStackToggle}
+                onclosepanel={closeCallStack}
+            ></ui-utility-panel>
+        </footer>
+    </div>
+</template>

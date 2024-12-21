@@ -1,0 +1,27 @@
+:host {
+    --brandBackgroundPrimary: rgb(238, 244, 255);
+    --zIndexDefault: 1;
+    --fullWidth: 100%;
+}
+.appContent {
+    background-color: var(--brandBackgroundPrimary);
+    z-index: var(--zIndexDefault);
+    top: 40px;
+    width: var(--fullWidth);
+}
+
+.oneCenterStage {
+    overflow: visible;
+    background-color: transparent;
+    max-width: 100%;
+    left: 0;
+    right: 0px;
+}
+
+.slds-template_default.slds-brand-band:before {
+    top: 0rem;
+}
+
+.slds-brand-band:before {
+    background-repeat: repeat;
+}

@@ -1,0 +1,17 @@
+.nav-item {
+    color: rgb(24, 24, 24);
+}
+
+a {
+    text-decoration: none !important;
+}
+
+a:hover {
+    text-decoration: none !important;
+}
+
+.slds-no-print {
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}

@@ -1,0 +1,48 @@
+{
+    "name": "DebugForce",
+    "description": "DebugForce - Analyze Salesforce Debug Logs in single click",
+    "version": "0.0.1",
+    "author": "Charan Girijala",
+    "bugs": "https://github.com/charangirijala/DebugForce/issues",
+    "dependencies": {
+        "@lwc/synthetic-shadow": "^8.12.2",
+        "@salesforce-ux/design-system": "^2.25.6",
+        "compression": "^1.7.5",
+        "express": "^4.21.2",
+        "helmet": "^8.0.0",
+        "querystring-es3": "^0.2.1"
+    },
+    "engines": {
+        "node": ">=10.13.0",
+        "npm": ">=6.4.1",
+        "yarn": ">=1.9.4"
+    },
+    "homepage": "https://github.com/charangirijala/DebugForce",
+    "keywords": [
+        "lwc"
+    ],
+    "license": "MIT",
+    "repository": "charangirijala/DebugForce",
+    "scripts": {
+        "build": "NODE_OPTIONS='--openssl-legacy-provider' lwc-services build -m production",
+        "build:development": "lwc-services build",
+        "lint": "eslint ./src/**/*.js",
+        "postinstall": "husky install",
+        "precommit": "npm run prettier:verify && [ $? -eq 0 ] && npm run lint",
+        "prettier": "prettier --write \"**/*.{css,html,js,json,md,ts,yaml,yml}\"",
+        "prettier:verify": "prettier --list-different \"**/*.{css,html,js,json,md,ts,yaml,yml}\"",
+        "start": "node scripts/server.js",
+        "test:unit": "lwc-services test:unit",
+        "test:unit:coverage": "lwc-services test:unit --coverage",
+        "test:unit:debug": "lwc-services test:unit --debug",
+        "test:unit:watch": "lwc-services test:unit --watch",
+        "watch": "NODE_OPTIONS='--openssl-legacy-provider' lwc-services watch"
+    },
+    "devDependencies": {
+        "eslint": "^7.32.0",
+        "eslint-plugin-inclusive-language": "^2.2.1",
+        "husky": "^9.1.7",
+        "lwc-services": "^3.2.2",
+        "prettier": "^3.4.2"
+    }
+}

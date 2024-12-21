@@ -1,0 +1,63 @@
+<template>
+    <div class="slds-no-print">
+        <div>
+            <div class="slds-context-bar">
+                <div class="slds-context-bar__primary navLeft">
+                    <h1
+                        class="appName slds-context-bar__label-action slds-context-bar__app-name"
+                    >
+                        <span class="slds-truncate" title="Sales"
+                            >DebugForce</span
+                        >
+                    </h1>
+                </div>
+                <div class="slds-grid slds-has-flexi-truncate">
+                    <span class="text-resize-watcher" aria-hidden="true"
+                        >&nbsp;</span
+                    >
+                    <nav
+                        class="slds-context-bar__secondary"
+                        role="navigation"
+                        aria-label="Global"
+                    >
+                        <div
+                            class="slds-grid slds-has-flexi-truncate"
+                            role="list"
+                        >
+                            <template
+                                for:each={navItems}
+                                for:item="item"
+                                for:index="itemidx"
+                            >
+                                <div
+                                    class={item.classCombination}
+                                    aria-hidden="false"
+                                    draggable="true"
+                                    role="listitem"
+                                    key={item.label}
+                                >
+                                    <a
+                                        class="slds-context-bar__label-action"
+                                        href="#"
+                                        onclick={handleNavigationItemClick}
+                                        data-navitem={itemidx}
+                                        title={item.label}
+                                        tabindex="0"
+                                        draggable="false"
+                                        aria-current="page"
+                                    >
+                                        <span class="slds-truncate nav-item"
+                                            >{item.label}</span
+                                        >
+                                    </a>
+                                </div>
+                            </template>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- <c-app-content></c-app-content> -->
+    <my-app-content></my-app-content>
+</template>

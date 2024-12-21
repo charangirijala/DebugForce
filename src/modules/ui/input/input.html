@@ -1,0 +1,20 @@
+<template>
+    <div class={inputClassList}>
+        <label class="slds-form-element__label slds-no-flex">{label}</label>
+        <div class="slds-form-element__control slds-grow">
+            <input
+                type="text"
+                minlength={minimumLength}
+                placeholder={placeholder}
+                class="slds-input"
+                value={textValue}
+                onchange={handleInputChange}
+            />
+        </div>
+        <template if:true={hasError}>
+            <div role="alert" class="slds-form-element__help">
+                Your entry is too short.
+            </div></template
+        >
+    </div>
+</template>
