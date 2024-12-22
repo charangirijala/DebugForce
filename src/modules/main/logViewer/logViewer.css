@@ -3,6 +3,11 @@ a {
     color: #015ba7;
 }
 
+.data-search {
+    position: absolute;
+    overflow: visible;
+    z-index: 10;
+}
 :host {
     --dxp-s-form-element-text-font-size: 0.75rem;
     --dxp-s-button-font-size: 0.8125rem;
