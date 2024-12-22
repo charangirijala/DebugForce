@@ -47,7 +47,7 @@
                                         <div class="slds-page-header__control">
                                             <div class="action-bars">
                                                 <div
-                                                    class="slds-m-left--xx-small"
+                                                    class="slds-m-left--xx-small search-button"
                                                 >
                                                     <div
                                                         class="slds-button-group actionBarButtonGroup"
@@ -95,6 +95,7 @@
                                                                     <button
                                                                         class="slds-button slds-button_icon-border action-bar-action-searchTable reportAction report-action-searchTable filtersButton"
                                                                         type="button"
+                                                                        onclick={handleSearch}
                                                                     >
                                                                         <svg
                                                                             aria-hidden="true"
@@ -104,13 +105,8 @@
                                                                             <path
                                                                                 d="M49.62 45.27L36.22 32a18.9 18.9 0 10-34.1-9.2A18.91 18.91 0 0032 36.27l13.3 13.3a1.45 1.45 0 002.1 0l2.1-2.1a1.68 1.68 0 00.12-2.2zm-28.7-11.5a12.9 12.9 0 1112.9-12.9 12.87 12.87 0 01-12.9 12.9z"
                                                                                 fill-rule="evenodd"
-                                                                            ></path></svg
-                                                                        ><span
-                                                                            class="slds-assistive-text"
-                                                                            >Search
-                                                                            report
-                                                                            table</span
-                                                                        >
+                                                                            ></path>
+                                                                        </svg>
                                                                     </button>
                                                                 </div>
                                                             </div>
@@ -397,18 +393,17 @@
                                                                                     single-select
                                                                                 ></ui-multi-select-combobox>
                                                                                 <template
-                                                                                    if:true={isFilterValuePicklist}
+                                                                                    lwc:if={isFilterValuePicklist}
                                                                                 >
                                                                                     <ui-multi-select-combobox
                                                                                         label="Value"
                                                                                         name="Value"
                                                                                         options={filterValueOptions}
-                                                                                        single-select
                                                                                         onclose={handleFilterValueChange}
                                                                                     ></ui-multi-select-combobox>
                                                                                 </template>
                                                                                 <template
-                                                                                    if:false={isFilterValuePicklist}
+                                                                                    lwc:else
                                                                                 >
                                                                                     <ui-input
                                                                                         label="Value"
@@ -641,6 +636,21 @@
                                                                                 <div
                                                                                     class="widgets-inner"
                                                                                 >
+                                                                                    <template
+                                                                                        lwc:if={isSearching}
+                                                                                    >
+                                                                                        <div
+                                                                                            class="data-search"
+                                                                                        >
+                                                                                            <ui-search
+                                                                                                onclosesearch={handleSearch}
+                                                                                                logtobe-filtered={fileData}
+                                                                                                onnextmatch={goToNxtMatch}
+                                                                                                onprevmatch={goToPrevMatch}
+                                                                                            ></ui-search>
+                                                                                        </div>
+                                                                                    </template>
+
                                                                                     <div
                                                                                         class="widget-container widget-container_reportMetrics"
                                                                                     >

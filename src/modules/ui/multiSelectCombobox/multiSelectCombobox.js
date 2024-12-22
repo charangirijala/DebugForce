@@ -46,7 +46,19 @@ export default class MultiSelectCombobox extends LightningElement {
      *   },
      * ]
      */
-    @api options = [];
+    _options = [];
+    /**
+     * @param {array | any[]} val
+     */
+    @api
+    set options(val) {
+        this._options = val;
+        this.currentOptions = this.options;
+        this.setSelection();
+    }
+    get options() {
+        return this._options;
+    }
 
     /**
      * Text that is displayed before an option is selected, to prompt the user to select an option.
@@ -154,15 +166,28 @@ export default class MultiSelectCombobox extends LightningElement {
     }
 
     change(event) {
-        // remove previous selection for single select picklist
+        // Create a new array reference
+        let updatedOptions = [...this.currentOptions];
+
+        // For single select, clear previous selections
         if (this.singleSelect) {
-            this.currentOptions.forEach((item) => (item.selected = false));
+            updatedOptions = updatedOptions.map((item) => ({
+                ...item,
+                selected: false
+            }));
         }
 
-        // set selected items
-        this.currentOptions
-            .filter((item) => item.value === event.detail.item.value)
-            .forEach((item) => (item.selected = event.detail.selected));
+        // Update the selected item
+        updatedOptions = updatedOptions.map((item) => {
+            if (item.value === event.detail.item.value) {
+                return { ...item, selected: event.detail.selected };
+            }
+            return item;
+        });
+
+        // Assign the new array reference
+        this.currentOptions = updatedOptions;
+
         this.setSelection();
         const selection = this.getSelectedItems();
         this.dispatchEvent(
@@ -171,7 +196,6 @@ export default class MultiSelectCombobox extends LightningElement {
             })
         );
 
-        // for single select picklist close dropdown after selection is made
         if (this.singleSelect) {
             this.close();
         }
@@ -186,7 +210,7 @@ export default class MultiSelectCombobox extends LightningElement {
         this.dispatchEvent(
             new CustomEvent('close', { detail: this.selectedOptions })
         );
-        console.log('close called');
+        console.log('close called', this.selectedOptions);
         this.selectedOptions = [];
     }
 
@@ -211,6 +235,10 @@ export default class MultiSelectCombobox extends LightningElement {
     }
 
     getSelectedItems() {
-        return this.currentOptions.filter((item) => item.selected);
+        const selectedItems = this.currentOptions.filter(
+            (item) => item.selected
+        );
+        // console.log('selected Items in combobox: ', selectedItems);
+        return selectedItems;
     }
 }
