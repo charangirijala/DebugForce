@@ -49,28 +49,11 @@
                                                 <div
                                                     class="slds-m-left--xx-small search-button"
                                                 >
-                                                    <div
-                                                        class="slds-button-group actionBarButtonGroup"
-                                                        role="group"
-                                                    >
-                                                        <button
-                                                            class="slds-button slds-button_neutral action-bar-action-inlineEditReport reportAction report-action-inlineEditReport filtersButton"
-                                                            type="button"
-                                                        >
-                                                            <svg
-                                                                aria-hidden="true"
-                                                                class="slds-button__icon slds-button__icon_left"
-                                                                viewBox="0 0 52 52"
-                                                            >
-                                                                <g>
-                                                                    <path
-                                                                        d="M9.5 33.4l8.9 8.9c.4.4 1 .4 1.4 0L42 20c.4-.4.4-1 0-1.4l-8.8-8.8c-.4-.4-1-.4-1.4 0L9.5 32.1c-.4.4-.4 1 0 1.3zM36.1 5.7c-.4.4-.4 1 0 1.4l8.8 8.8c.4.4 1 .4 1.4 0l2.5-2.5c1.6-1.5 1.6-3.9 0-5.5l-4.7-4.7c-1.6-1.6-4.1-1.6-5.7 0l-2.3 2.5zM2.1 48.2c-.2 1 .7 1.9 1.7 1.7l10.9-2.6c.4-.1.7-.3.9-.5l.2-.2c.2-.2.3-.9-.1-1.3l-9-9c-.4-.4-1.1-.3-1.3-.1l-.2.2c-.3.3-.4.6-.5.9L2.1 48.2z"
-                                                                    ></path>
-                                                                </g></svg
-                                                            >Enable Field
-                                                            Editing
-                                                        </button>
-                                                    </div>
+                                                    <ui-input
+                                                        has-label={goTohasLabel}
+                                                        placeholder={goToPlaceholder}
+                                                        oninputchange={goToLine}
+                                                    ></ui-input>
                                                 </div>
                                                 <div
                                                     class="slds-m-left--xx-small"
@@ -87,7 +70,9 @@
                                                                 line-height: 1;
                                                             "
                                                         >
-                                                            <div>
+                                                            <div
+                                                                class="search-button"
+                                                            >
                                                                 <div
                                                                     role="button"
                                                                     tabindex="-1"
@@ -117,7 +102,7 @@
                                                 <div
                                                     class="slds-m-left--xx-small"
                                                 >
-                                                    <div
+                                                    <!-- <div
                                                         class="slds-button-group actionBarButtonGroup"
                                                         role="group"
                                                     >
@@ -139,7 +124,7 @@
                                                                 ></path></svg
                                                             >Add Chart
                                                         </button>
-                                                    </div>
+                                                    </div> -->
                                                 </div>
                                                 <div
                                                     class="slds-m-left--xx-small"
@@ -645,8 +630,9 @@
                                                                                             <ui-search
                                                                                                 onclosesearch={handleSearch}
                                                                                                 logtobe-filtered={fileData}
-                                                                                                onnextmatch={goToNxtMatch}
-                                                                                                onprevmatch={goToPrevMatch}
+                                                                                                onmatchchange={goToMatch}
+                                                                                                onsearchres={processSearchRes}
+                                                                                                onnores={processNoSearchRes}
                                                                                             ></ui-search>
                                                                                         </div>
                                                                                     </template>
@@ -733,6 +719,8 @@
                                                                                         >
                                                                                             <tr
                                                                                                 key={lineObj.lineNumber}
+                                                                                                data-logid={lineObj.lineNumber}
+                                                                                                class="log-row"
                                                                                             >
                                                                                                 <td
                                                                                                     style="

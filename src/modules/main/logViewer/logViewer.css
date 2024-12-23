@@ -8,6 +8,14 @@ a {
     overflow: visible;
     z-index: 10;
 }
+
+.search-res {
+    background-color: rgb(250, 255, 189);
+}
+
+.search-res-focus {
+    background-color: yellow;
+}
 :host {
     --dxp-s-form-element-text-font-size: 0.75rem;
     --dxp-s-button-font-size: 0.8125rem;

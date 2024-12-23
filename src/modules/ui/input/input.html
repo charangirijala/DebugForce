@@ -1,15 +1,28 @@
 <template>
     <div class={inputClassList}>
-        <label class="slds-form-element__label slds-no-flex">{label}</label>
+        <template lwc:if={hasLabel}>
+            <label class="slds-form-element__label slds-no-flex">{label}</label>
+        </template>
         <div class="slds-form-element__control slds-grow">
-            <input
-                type="text"
-                minlength={minimumLength}
-                placeholder={placeholder}
-                class="slds-input"
-                value={textValue}
-                onchange={handleInputChange}
-            />
+            <template lwc:if={textValue}>
+                <input
+                    type="text"
+                    minlength={minimumLength}
+                    placeholder={placeholder}
+                    class="slds-input"
+                    value={textValue}
+                    onchange={handleInputChange}
+                />
+            </template>
+            <template lwc:else>
+                <input
+                    type="text"
+                    minlength={minimumLength}
+                    placeholder={placeholder}
+                    class="slds-input"
+                    oninput={handleOnInput}
+                />
+            </template>
         </div>
         <template if:true={hasError}>
             <div role="alert" class="slds-form-element__help">
