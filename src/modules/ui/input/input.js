@@ -5,6 +5,7 @@ export default class Input extends LightningElement {
     @api minimumLength;
     @api placeholder;
     @api textValue;
+    @api hasLabel;
     textValueInternal = '';
     @api type;
     hasError = false;
@@ -28,7 +29,19 @@ export default class Input extends LightningElement {
         );
         console.log(this.textValueInternal);
     }
-
+    handleOnInput(event) {
+        const lineNum = event.target.value;
+        if (!isNaN(lineNum) && lineNum !== '') {
+            clearTimeout(this.timeoutId);
+            this.timeoutId = setTimeout(() => {
+                this.dispatchEvent(
+                    new CustomEvent('inputchange', {
+                        detail: parseInt(lineNum, 10)
+                    })
+                );
+            }, 500);
+        }
+    }
     checkMinLength() {
         if (this.minimumLength && this.textValueInternal) {
             if (

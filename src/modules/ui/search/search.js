@@ -21,6 +21,7 @@ export default class Search extends LightningElement {
     handleSearchInput(event) {
         clearTimeout(this.timeoutId);
         const input = event.target.value;
+        console.log('entered: ', input);
         this.timeoutId = setTimeout(() => {
             this.searchLog(input);
         }, 500);
@@ -77,7 +78,7 @@ export default class Search extends LightningElement {
             this.onRes = this.totRes = 0;
             return;
         }
-        if (searchTerm.length > 2 && searchTerm !== undefined) {
+        if (searchTerm.length >= 2 && searchTerm !== undefined) {
             const results = this.logtobeFiltered.filter((log) =>
                 log.line.includes(searchTerm)
             );

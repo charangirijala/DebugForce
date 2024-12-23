@@ -1,8 +1,10 @@
 /* eslint-disable inclusive-language/use-inclusive-words */
 import { LightningElement, track } from 'lwc';
-import { subscribe, publish } from 'services/pubsub';
+import { subscribe } from 'services/pubsub';
 
 export default class logViewer extends LightningElement {
+    goToPlaceholder = 'Go to line';
+    goTohasLabel = false;
     reRenderVal = false;
     isLoading = false;
     isSearching = false;
@@ -165,7 +167,7 @@ export default class logViewer extends LightningElement {
                 const searchPopover =
                     this.template.querySelector('.data-search');
                 if (searchPopover) {
-                    searchPopover.style.left = `${searchButtonRect.right}px`;
+                    searchPopover.style.right = `${window.innerWidth - 24 - searchButtonRect.right}px`;
                 }
             }
             const lineElem = this.template.querySelectorAll('.log-row');
@@ -501,7 +503,7 @@ export default class logViewer extends LightningElement {
     processSearchRes(event) {
         const lineNumbers = event.detail;
         this.LineNumMap = new Map();
-        console.log(lineNumbers);
+        //console.log(lineNumbers);
         if (Array.isArray(lineNumbers)) {
             lineNumbers.forEach((l) => {
                 if (this.linesPerPage !== 0) {
@@ -547,5 +549,11 @@ export default class logViewer extends LightningElement {
             }
         }
         this.LineNumMap = new Map();
+    }
+
+    goToLine(event) {
+        // console.log('linenumber', event.detail);
+        const lNum = event.detail;
+        this.goToPage(lNum);
     }
 }
