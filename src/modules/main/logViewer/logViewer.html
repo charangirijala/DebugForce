@@ -645,8 +645,9 @@
                                                                                             <ui-search
                                                                                                 onclosesearch={handleSearch}
                                                                                                 logtobe-filtered={fileData}
-                                                                                                onnextmatch={goToNxtMatch}
-                                                                                                onprevmatch={goToPrevMatch}
+                                                                                                onmatchchange={goToMatch}
+                                                                                                onsearchres={processSearchRes}
+                                                                                                onnores={processNoSearchRes}
                                                                                             ></ui-search>
                                                                                         </div>
                                                                                     </template>
@@ -733,6 +734,8 @@
                                                                                         >
                                                                                             <tr
                                                                                                 key={lineObj.lineNumber}
+                                                                                                data-logid={lineObj.lineNumber}
+                                                                                                class="log-row"
                                                                                             >
                                                                                                 <td
                                                                                                     style="

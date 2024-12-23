@@ -7,6 +7,8 @@ export default class logViewer extends LightningElement {
     isLoading = false;
     isSearching = false;
     callStackToggle = false;
+    LineNumMap = new Map();
+    LineNumFocus = null;
     fieldValue;
     operatorValue;
     filterValue = '';
@@ -166,6 +168,35 @@ export default class logViewer extends LightningElement {
                     searchPopover.style.left = `${searchButtonRect.right}px`;
                 }
             }
+            const lineElem = this.template.querySelectorAll('.log-row');
+            if (lineElem.length > 0) {
+                lineElem.forEach((ele) => {
+                    ele.style.backgroundColor = 'rgba(0, 0, 0, 0)';
+                });
+            }
+            if (this.LineNumMap.size > 0) {
+                if (this.LineNumMap.has(this.pageNumber)) {
+                    const highEle = this.LineNumMap.get(this.pageNumber);
+                    highEle.forEach((ele) => {
+                        const element = this.template.querySelector(
+                            `[data-logid="${ele}"]`
+                        );
+
+                        if (element) {
+                            if (this.LineNumFocus !== ele) {
+                                element.style.backgroundColor =
+                                    'rgb(250, 255, 189)';
+                            } else {
+                                element.style.backgroundColor = 'yellow';
+                                element.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'start'
+                                });
+                            }
+                        }
+                    });
+                }
+            }
         }
         console.log('Rerendering: ', this.activeFilters);
     }
@@ -174,52 +205,6 @@ export default class logViewer extends LightningElement {
         return this.activeFilters.length > 0;
     }
 
-    // subscribeToMessageChannel() {
-    // console.log("Subscribe called");
-    //    if (!this.logChannelSub) {
-    //        this.logChannelSub = subscribe(
-    //            this.messageContext,
-    //            STATE,
-    //            (message) => {
-    //                this.setFileData(message);
-    //            },
-    //            { scope: APPLICATION_SCOPE }
-    //        );
-    //        this.logChannelSub = true;
-    //    }
-    // }
-
-    // setFileData(message) {
-    //     if (message !== null && message !== undefined) {
-    //         // console.log("[LogPreviewer.js] setFileData called", message);
-    //         if (message.fileData !== undefined && message.fileData !== null) {
-    //             this.fileData = message.fileData;
-    //             this.pageNumber = 1;
-    //             this.noOfPages = Math.ceil(
-    //                 this.fileData.length / this.linesPerPage
-    //             );
-    //             this.calculations();
-    //         }
-    //         if (
-    //             message.fileMetadata !== undefined &&
-    //             message.fileMetadata !== null
-    //         ) {
-    //             this.fileMetadata = message.fileMetadata;
-    //         }
-    //         if (
-    //             message.eventsPicklistValues !== undefined &&
-    //             message.eventsPicklistValues !== null
-    //         ) {
-    //             if (Array.isArray(message.eventsPicklistValues)) {
-    //                 this.filterPickListMaster =
-    //                     message.eventsPicklistValues.map((str) => ({
-    //                         value: str,
-    //                         label: str
-    //                     }));
-    //             }
-    //         }
-    //     }
-    // }
     onLinesPerPageChange(event) {
         // console.log("Page Change: ", event.target.value);
         let input = parseInt(event.target.value, 10);
@@ -508,15 +493,59 @@ export default class logViewer extends LightningElement {
 
     handleSearch() {
         this.isSearching = !this.isSearching;
-        // const payload = this.fileData;
-        // publish('searchChannel', payload);
+        if (this.isSearching === false) {
+            this.processNoSearchRes();
+        }
     }
 
-    goToNxtMatch(event) {
-        console.log(event.detail);
+    processSearchRes(event) {
+        const lineNumbers = event.detail;
+        this.LineNumMap = new Map();
+        console.log(lineNumbers);
+        if (Array.isArray(lineNumbers)) {
+            lineNumbers.forEach((l) => {
+                if (this.linesPerPage !== 0) {
+                    const pNum = Math.ceil(l / this.linesPerPage);
+                    if (this.LineNumMap.has(pNum)) {
+                        this.LineNumMap.get(pNum).push(l);
+                    } else {
+                        this.LineNumMap.set(pNum, [l]);
+                    }
+                }
+            });
+        }
+        // console.log('Map: ', this.LineNumMap);
     }
 
-    goToPrevMatch(event) {
-        console.log(event.detail);
+    goToMatch(event) {
+        const lineNumber = event.detail;
+        // console.log('lineNumber: ', lineNumber);
+        this.goToPage(lineNumber);
+    }
+
+    goToPage(lineNumber) {
+        //calculate the pagenumber
+        if (this.linesPerPage <= 0 || lineNumber <= 0) return;
+        this.LineNumFocus = lineNumber;
+        this.pageNumber = Math.ceil(lineNumber / this.linesPerPage);
+        this.calculations();
+    }
+
+    processNoSearchRes() {
+        this.LineNumFocus = null;
+        if (this.LineNumMap.size > 0) {
+            if (this.LineNumMap.has(this.pageNumber)) {
+                const highEle = this.LineNumMap.get(this.pageNumber);
+                highEle.forEach((ele) => {
+                    const element = this.template.querySelector(
+                        `[data-logid="${ele}"]`
+                    );
+                    if (element) {
+                        element.style.backgroundColor = 'rgba(0, 0, 0, 0)';
+                    }
+                });
+            }
+        }
+        this.LineNumMap = new Map();
     }
 }

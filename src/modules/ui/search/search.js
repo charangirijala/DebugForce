@@ -5,7 +5,7 @@ export default class Search extends LightningElement {
     onRes = 0;
     totRes = 0;
     nextDisabled = false;
-    prevDisabled = true;
+    prevDisabled = false;
     matchedLines = [];
     @api logtobeFiltered = [];
 
@@ -24,32 +24,52 @@ export default class Search extends LightningElement {
         this.timeoutId = setTimeout(() => {
             this.searchLog(input);
         }, 500);
-        console.log('input: ', event.target.value);
+        //    console.log('input: ', event.target.value);
     }
 
     gotoNext() {
+        let idx = this.onRes - 1;
         if (this.onRes < this.totRes) {
+            this.onRes++;
             this.dispatchEvent(
-                new CustomEvent('nextmatch', {
-                    detail: this.matchedLines[this.onRes++]
+                new CustomEvent('matchchange', {
+                    detail: this.matchedLines[++idx]
                 })
             );
+        } else if (this.onRes === this.totRes) {
+            if (this.totRes !== 0) {
+                this.onRes = 1;
+                this.dispatchEvent(
+                    new CustomEvent('matchchange', {
+                        detail: this.matchedLines[0]
+                    })
+                );
+            }
         }
 
-        this.nextDisabled = this.onRes === this.totRes ? true : false;
-        this.prevDisabled = this.onRes === 0 ? true : false;
+        //    this.nextDisabled = this.onRes === this.totRes ? true : false;
+        //    this.prevDisabled = this.onRes === 0 ? true : false;
     }
 
     goBack() {
-        if (this.onRes > 0) {
+        let idx = this.onRes - 1;
+        if (idx > 0) {
+            this.onRes--;
             this.dispatchEvent(
-                new CustomEvent('prevmatch', {
-                    detail: this.matchedLines[this.onRes--]
+                new CustomEvent('matchchange', {
+                    detail: this.matchedLines[--idx]
+                })
+            );
+        } else if (idx === 0) {
+            this.onRes = this.totRes;
+            this.dispatchEvent(
+                new CustomEvent('matchchange', {
+                    detail: this.matchedLines[this.onRes - 1]
                 })
             );
         }
-        this.nextDisabled = this.onRes === this.totRes ? true : false;
-        this.prevDisabled = this.onRes === 0 ? true : false;
+        //    this.nextDisabled = this.onRes === this.totRes ? true : false;
+        //    this.prevDisabled = this.onRes === 0 ? true : false;
     }
 
     searchLog(searchTerm) {
@@ -57,7 +77,7 @@ export default class Search extends LightningElement {
             this.onRes = this.totRes = 0;
             return;
         }
-        if (searchTerm.length !== 0 && searchTerm !== undefined) {
+        if (searchTerm.length > 2 && searchTerm !== undefined) {
             const results = this.logtobeFiltered.filter((log) =>
                 log.line.includes(searchTerm)
             );
@@ -66,20 +86,27 @@ export default class Search extends LightningElement {
                 //  console.log('Found logs:', results);
                 this.matchedLines = results.map((log) => log.lineNumber);
                 this.totRes = this.matchedLines.length;
-
+                this.onRes = 1;
                 this.dispatchEvent(
-                    new CustomEvent('nextmatch', {
-                        detail: this.matchedLines[this.onRes++]
+                    new CustomEvent('searchres', {
+                        detail: this.matchedLines
+                    })
+                );
+                this.dispatchEvent(
+                    new CustomEvent('matchchange', {
+                        detail: this.matchedLines[this.onRes - 1]
                     })
                 );
                 //  console.log('Line numbers:', lineNumbers);
             } else if (results.length === 0) {
                 this.onRes = 0;
                 this.totRes = 0;
+                this.dispatchEvent(new CustomEvent('nores'));
             }
         } else {
             this.onRes = 0;
             this.totRes = 0;
+            this.dispatchEvent(new CustomEvent('nores'));
         }
     }
 }
