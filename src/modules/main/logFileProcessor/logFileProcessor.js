@@ -1,5 +1,6 @@
 import { LightningElement } from 'lwc';
 import { eventsRegexMain } from 'parser/utilVariables';
+
 import { publish } from 'services/pubsub';
 // import { publish, MessageContext } from 'lightning/messageService';
 
@@ -80,7 +81,7 @@ export default class LogFileProcessor extends LightningElement {
         nofMethodUnits: 0
     };
     fileDataPartial = [];
-    treeNodes = [];
+    // treeNodes = [];
     level = 1;
     posinset = 1;
     maxsize = 100;
@@ -171,7 +172,7 @@ export default class LogFileProcessor extends LightningElement {
 
         //publish fileData to MessageChannel
         this.publishFileMetadata();
-
+        // parseResultToTree(this.result);
         console.log('Total stdExps: ', this.stdExpCount);
         console.log('Total exeAnonys: ', this.execAnonyCount);
         console.log('Total CodeUnits Count: ', this.codeUnitsCount);
@@ -179,7 +180,7 @@ export default class LogFileProcessor extends LightningElement {
         console.log('Final Result after processing res: ', this.result);
         console.log('codeUnitsStack count: ', this.codeUnitsStack.length);
         console.log('methodUnitsStack count: ', this.methodUnitsStack.length);
-        console.log('treeNodes: ', this.treeNodes);
+        // console.log('treeNodes: ', this.treeNodes);
     }
 
     /*
@@ -198,6 +199,7 @@ export default class LogFileProcessor extends LightningElement {
             const splitArr1 = neededLine.split('/');
             cu.cuName = splitArr1[splitArr1.length - 2];
             cu.cuType = 'Class';
+
             cu.methodRunning = splitArr1[splitArr1.length - 1];
             cu.isTrigger = false;
         } else if (type === 'Class-Method') {
@@ -305,7 +307,8 @@ export default class LogFileProcessor extends LightningElement {
         methodUnit.unitDuration = index;
         if (type === 'Method-Generic') {
             this.isCurUnitCU = false;
-            methodUnit.Id = this.methodUnitsCount++;
+            this.methodUnitsCount++;
+            // methodUnit.Id = this.methodUnitsCount++;
             methodUnit.type = 'Method';
             const splitArr = line.split('|');
             methodUnit.methodTitle = splitArr[splitArr.length - 1];
@@ -325,7 +328,7 @@ export default class LogFileProcessor extends LightningElement {
             this.methodUnitsStack.push(methodUnit);
         } else if (type === 'Method-System') {
             this.isCurUnitCU = false;
-            methodUnit.Id = this.methodUnitsCount++;
+            // methodUnit.Id = this.methodUnitsCount++;
             methodUnit.methodTitle = 'System Method';
             methodUnit.type = 'System Method';
             methodUnit.methodName = line.substring(line.lastIndexOf('|') + 1);
@@ -384,21 +387,20 @@ export default class LogFileProcessor extends LightningElement {
                 CUTop.childUnitsandLines.push(codeUnit);
                 this.level++;
                 this.posinset = 1;
-                this.treeNodes.push(this.createNode(codeUnit));
+                // this.treeNodes.push(this.createNode(codeUnit));
             } else {
                 CUTop.childUnitsandLines.push(codeUnit);
-                this.treeNodes.push(this.createNode(codeUnit));
+                // this.treeNodes.push(this.createNode(codeUnit));
             }
         } else {
             console.log('Entered direct push condition');
             this.result.push(codeUnit);
-            this.treeNodes.push(this.createNode(codeUnit));
+            // this.treeNodes.push(this.createNode(codeUnit));
         }
     }
 
     addLinetoCUorMU(line, event, idx) {
         let lineDetails = { line: line, event: event, lineNumber: idx };
-
         this.addMUtoResult(lineDetails);
     }
 
@@ -436,6 +438,7 @@ export default class LogFileProcessor extends LightningElement {
         const payload = {
             fileMetadata: this.fileMetadata,
             fileData: this.fileDataPartial,
+            result: this.result,
             eventsPicklistValues: Array.from(this.eventsPicklistValues)
         };
         publish('logChannel', payload);

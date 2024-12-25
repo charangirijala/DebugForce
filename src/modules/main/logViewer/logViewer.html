@@ -31,7 +31,7 @@
                                                         <span>Log Viewer</span
                                                         ><span
                                                             class="slds-page-header__title slds-truncate"
-                                                            title="New Accounts Report"
+                                                            title={fileMetadata.fileName}
                                                             >{fileMetadata.fileName}</span
                                                         >
                                                     </h1>
@@ -850,10 +850,13 @@
                 </li>
             </ul>
             <!-- utility panel -->
-            <ui-utility-panel
-                panel-toggle={callStackToggle}
-                onclosepanel={closeCallStack}
-            ></ui-utility-panel>
+            <template lwc:if={callStackToggle}>
+                <ui-utility-panel
+                    panel-toggle={callStackToggle}
+                    onclosepanel={closeCallStack}
+                    data={result}
+                ></ui-utility-panel>
+            </template>
         </footer>
     </div>
 </template>
