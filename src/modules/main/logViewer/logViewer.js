@@ -6,6 +6,7 @@ export default class logViewer extends LightningElement {
     goToPlaceholder = 'Go to line';
     goTohasLabel = false;
     reRenderVal = false;
+    result = [];
     isLoading = false;
     isSearching = false;
     callStackToggle = false;
@@ -130,6 +131,10 @@ export default class logViewer extends LightningElement {
                     }
                     if (data.fileMetadata)
                         this.fileMetadata = data.fileMetadata;
+                    if (data.result) {
+                        // console.log('Result: ', data.result);
+                        this.result = data.result;
+                    }
                     if (data.eventsPicklistValues) {
                         if (Array.isArray(data.eventsPicklistValues)) {
                             this.filterPickListMaster =

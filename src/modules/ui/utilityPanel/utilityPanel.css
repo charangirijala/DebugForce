@@ -1,3 +1,38 @@
+:host {
+    line-height: normal;
+}
 .utility-panel {
-    width: 30rem;
+    width: auto;
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 2.5rem;
+}
+
+.line-length {
+    font-size: 0.75rem;
+    color: #747474;
+    display: none;
+}
+
+tr:hover span {
+    display: inline;
+}
+
+th,
+td {
+    padding-top: 0.1rem;
+    padding-bottom: 0.1rem;
+}
+
+.slds-th__action {
+    padding-top: 0.1rem;
+    padding-bottom: 0.1rem;
+    height: 1.5rem;
+}
+
+th {
+    color: #16315a;
+}
+.slds-utility-panel__body {
+    overflow: auto;
 }
