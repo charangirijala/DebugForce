@@ -83,3 +83,7 @@ eventsRegexMain.set(
         ]
     ])
 );
+
+export let timeStampRegex = new RegExp(
+    '(\\d{2}:\\d{2}:\\d{2})\\.(\\d+)\\s\\((\\d+)\\)'
+);

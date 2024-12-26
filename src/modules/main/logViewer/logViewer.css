@@ -344,6 +344,7 @@ th {
 }
 
 .line-text {
+    line-height: normal;
     color: #16315a;
     fill: #16315a;
     font-weight: 400;
