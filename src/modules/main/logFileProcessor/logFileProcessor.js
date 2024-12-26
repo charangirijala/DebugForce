@@ -1,5 +1,5 @@
 import { LightningElement } from 'lwc';
-import { eventsRegexMain } from 'parser/utilVariables';
+import { eventsRegexMain, timeStampRegex } from 'parser/utilVariables';
 
 import { publish } from 'services/pubsub';
 // import { publish, MessageContext } from 'lightning/messageService';
@@ -81,10 +81,6 @@ export default class LogFileProcessor extends LightningElement {
         nofMethodUnits: 0
     };
     fileDataPartial = [];
-    // treeNodes = [];
-    level = 1;
-    posinset = 1;
-    maxsize = 100;
     //     @wire(MessageContext)
     //     messageContext;
     get acceptedFormats() {
@@ -137,25 +133,33 @@ export default class LogFileProcessor extends LightningElement {
                                 '=>',
                                 line
                             );
-                            this.createCodeUnit(line, value, idx);
+                            this.createCodeUnit(line, value, idx + 1);
                             break;
                         }
                     }
                 } else if (lineEvent === 'CODE_UNIT_FINISHED') {
                     //process codeunit finish logic
-                    this.exitCodeUnit(idx);
+                    try {
+                        this.exitCodeUnit(idx + 1, line);
+                    } catch (err) {
+                        console.error(e);
+                    }
                 } else if (lineEvent === 'METHOD_ENTRY') {
                     const RegexMap = eventsRegexMain.get(lineEvent);
                     for (let [key, value] of RegexMap) {
                         if (key.test(line)) {
                             // console.log(value, "=>", key.test(line), "=>", line);
-                            this.createMethodUnit(line, value, idx);
+                            this.createMethodUnit(line, value, idx + 1);
                             break;
                         }
                     }
                 } else if (lineEvent === 'METHOD_EXIT') {
                     //process methodunit finish logic
-                    this.exitMethodUnit(idx);
+                    try {
+                        this.exitMethodUnit(idx + 1, line);
+                    } catch (e) {
+                        console.error(e);
+                    }
                 } else {
                     this.addLinetoCUorMU(line, lineEvent, idx);
                 }
@@ -282,7 +286,7 @@ export default class LogFileProcessor extends LightningElement {
         if (enteredCondition) {
             this.isCurUnitCU = true;
             cu.Id = this.codeUnitsCount++;
-
+            cu.startTime = this.extractTimeStamp(line);
             this.addCUtoResult(cu);
             this.codeUnitsStack.push(cu);
         }
@@ -292,9 +296,15 @@ export default class LogFileProcessor extends LightningElement {
      * get the current CU and update the lineDuration
      * Update the currentCUIndex and isCurUnitCU
      */
-    exitCodeUnit(idx) {
+    exitCodeUnit(idx, line) {
         let CodeUnit = this.currentCU();
+        if (CodeUnit === null) {
+            throw new Error(
+                'Oops!! Some code units are not picked by the parser'
+            );
+        }
         CodeUnit.unitDuration += ' - ' + idx;
+        CodeUnit.endTime = this.extractTimeStamp(line);
         this.codeUnitsStack.pop();
     }
 
@@ -335,11 +345,18 @@ export default class LogFileProcessor extends LightningElement {
             this.addMUtoResult(methodUnit);
             this.methodUnitsStack.push(methodUnit);
         }
+        methodUnit.startTime = this.extractTimeStamp(line);
     }
 
-    exitMethodUnit(index) {
+    exitMethodUnit(index, line) {
         let methodUnit = this.currentMU();
+        if (methodUnit === null) {
+            throw new Error(
+                'Oops!! Some method units are not picked by the parser'
+            );
+        }
         methodUnit.unitDuration += ' - ' + index;
+        methodUnit.endTime = this.extractTimeStamp(line);
         this.methodUnitsStack.pop();
     }
 
@@ -376,7 +393,7 @@ export default class LogFileProcessor extends LightningElement {
 
     addCUtoResult(codeUnit) {
         if (this.codeUnitsStack.length !== 0) {
-            console.log('Entered length condition');
+            // console.log('Entered length condition');
             let CUTop = this.currentCU();
             console.log(CUTop.childUnitsandLines);
             if (
@@ -385,40 +402,18 @@ export default class LogFileProcessor extends LightningElement {
             ) {
                 CUTop.childUnitsandLines = [];
                 CUTop.childUnitsandLines.push(codeUnit);
-                this.level++;
-                this.posinset = 1;
-                // this.treeNodes.push(this.createNode(codeUnit));
             } else {
                 CUTop.childUnitsandLines.push(codeUnit);
-                // this.treeNodes.push(this.createNode(codeUnit));
             }
         } else {
-            console.log('Entered direct push condition');
+            // console.log('Entered direct push condition');
             this.result.push(codeUnit);
-            // this.treeNodes.push(this.createNode(codeUnit));
         }
     }
 
     addLinetoCUorMU(line, event, idx) {
         let lineDetails = { line: line, event: event, lineNumber: idx };
         this.addMUtoResult(lineDetails);
-    }
-
-    createNode(codeUnit) {
-        let Node = {
-            id: codeUnit.Id,
-            name: codeUnit.cuName,
-            type: codeUnit.cuType,
-            hasError: codeUnit.hasError,
-            hasChild: false,
-            isExpanded: false,
-            isSelected: false,
-            level: this.level,
-            posinset: this.posinset,
-            maxsize: this.maxsize
-        };
-        this.posinset++;
-        return Node;
     }
 
     addToFileDataPartial(line, event, lineNumber) {
@@ -442,5 +437,15 @@ export default class LogFileProcessor extends LightningElement {
             eventsPicklistValues: Array.from(this.eventsPicklistValues)
         };
         publish('logChannel', payload);
+    }
+
+    extractTimeStamp(line) {
+        const durRaw = line.substring(0, line.indexOf('|'));
+        const match = durRaw.match(timeStampRegex);
+        if (match !== null && match.length === 4) {
+            const timeStamp = parseInt(match[3], 10);
+            return timeStamp;
+        }
+        return null;
     }
 }

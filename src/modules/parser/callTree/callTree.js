@@ -66,7 +66,7 @@ export function parseResultToTree(result) {
     // posMap.forEach((value, key) => {
     //     console.log(`Level: ${key}, Position: ${value}`);
     // });
-    // console.log('units', units);
+    console.log('units', units);
     return units;
 }
 
@@ -127,6 +127,7 @@ function parseDebugLogUnits(obj, units = [], level = 1, parentId) {
     if (obj.cuType) {
         // Extract code unit information
         let duration = 0;
+        let timeInMS = 0;
         let uniqueId = null;
         try {
             ({ duration, uniqueId } = calculateDuration(obj.unitDuration));
@@ -134,11 +135,18 @@ function parseDebugLogUnits(obj, units = [], level = 1, parentId) {
             uniqueId = Math.random().toString(36).substring(2, 6);
             console.error(e);
         }
+        if (obj.startTime && obj.endTime && obj.startTime !== obj.endTime) {
+            let temp = (obj.endTime - obj.startTime) / 1000000;
+            timeInMS = temp.toFixed(3);
+        } else {
+            timeInMS = 'N/A';
+        }
         const unit = {
             id: uniqueId,
             parentId: parentId,
             type: obj.cuType,
             name: obj.cuName,
+            timeInMS: timeInMS,
             level: level,
             unitDuration: obj.unitDuration,
             unitLength: duration,
@@ -153,6 +161,13 @@ function parseDebugLogUnits(obj, units = [], level = 1, parentId) {
         // Extract code unit information
         let duration = 0;
         let uniqueId = null;
+        let timeInMS = 0;
+        if (obj.startTime && obj.endTime && obj.startTime !== obj.endTime) {
+            let temp = (obj.endTime - obj.startTime) / 1000000;
+            timeInMS = temp.toFixed(3);
+        } else {
+            timeInMS = 'N/A';
+        }
         try {
             ({ duration, uniqueId } = calculateDuration(obj.unitDuration));
         } catch (e) {
@@ -163,6 +178,7 @@ function parseDebugLogUnits(obj, units = [], level = 1, parentId) {
             id: uniqueId,
             parentId: parentId,
             name: obj.methodTitle,
+            timeInMS: timeInMS,
             type: obj.type,
             level: level,
             unitDuration: obj.unitDuration,
