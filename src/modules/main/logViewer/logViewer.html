@@ -780,22 +780,61 @@
                         ><span class="slds-utility-bar__text">Call Stack</span>
                     </button>
                 </li>
+                <li class="slds-utility-bar__item log-errors">
+                    <template lwc:if={hasError}>
+                        <button
+                            class="slds-button slds-utility-bar__action .slds-theme_error error-btn"
+                            onclick={handleErrorClick}
+                        >
+                            <svg
+                                class="slds-button__icon slds-button__icon_left log-errors-text"
+                                aria-hidden="true"
+                            >
+                                <use
+                                    xlink:href="/public/assets/icons/utility-sprite/svg/symbols.svg#error"
+                                ></use></svg
+                            ><span
+                                class="slds-utility-bar__text log-errors-text"
+                                >5 Errors</span
+                            >
+                        </button>
+                    </template>
+                    <template lwc:else>
+                        <button class="slds-button slds-utility-bar__action">
+                            <svg
+                                class="slds-button__icon slds-button__icon_left log-errors-no-err-text"
+                                aria-hidden="true"
+                            >
+                                <use
+                                    xlink:href="/public/assets/icons/utility-sprite/svg/symbols.svg#check"
+                                ></use></svg
+                            ><span
+                                class="slds-utility-bar__text log-errors-no-err-text"
+                                >0 Errors</span
+                            >
+                        </button>
+                    </template>
+                </li>
+                <li
+                    class="slds-utility-bar__item utility-bar-span-text slds-var-p-horizontal_xxx-small"
+                >
+                    <span>Page</span>
+                </li>
                 <li
                     class="slds-utility-bar__item slds-var-p-horizontal_xxx-small utility-bar-input"
                 >
                     <input
                         type="text"
-                        value={linesPerPage}
-                        class={linesPerPageClass}
-                        maxlength="4"
+                        value={pageNumber}
+                        class={pageNumberClass}
                         inputmode="decimal"
-                        oninput={onLinesPerPageChange}
+                        oninput={onPageNumberChange}
                     />
                 </li>
                 <li
-                    class="slds-utility-bar__item slds-var-p-horizontal_xxx-small utility-bar-span-text"
+                    class="slds-utility-bar__item utility-bar-span-text slds-var-p-horizontal_xxx-small"
                 >
-                    <span>Lines per page:</span>
+                    <span>of <strong>{noOfPages}</strong></span>
                 </li>
                 <li
                     class="slds-utility-bar__item slds-var-p-horizontal_xxx-small"
@@ -828,25 +867,21 @@
                     </div>
                 </li>
                 <li
-                    class="slds-utility-bar__item utility-bar-span-text slds-var-p-horizontal_xxx-small"
+                    class="slds-utility-bar__item slds-var-p-horizontal_xxx-small utility-bar-span-text"
                 >
-                    <span>of <strong>{noOfPages}</strong></span>
+                    <span>Lines per page:</span>
                 </li>
                 <li
                     class="slds-utility-bar__item slds-var-p-horizontal_xxx-small utility-bar-input"
                 >
                     <input
                         type="text"
-                        value={pageNumber}
-                        class={pageNumberClass}
+                        value={linesPerPage}
+                        class={linesPerPageClass}
+                        maxlength="4"
                         inputmode="decimal"
-                        oninput={onPageNumberChange}
+                        oninput={onLinesPerPageChange}
                     />
-                </li>
-                <li
-                    class="slds-utility-bar__item utility-bar-span-text slds-var-p-horizontal_xxx-small"
-                >
-                    <span>Page</span>
                 </li>
             </ul>
             <!-- utility panel -->
@@ -857,6 +892,12 @@
                     data={result}
                 ></ui-utility-panel>
             </template>
+            <!-- log errors -->
+            <ui-log-errors
+                position-x={errorCenterX}
+                is-open={errorPopoverOpen}
+                onclose={closeErrorPopover}
+            ></ui-log-errors>
         </footer>
     </div>
 </template>

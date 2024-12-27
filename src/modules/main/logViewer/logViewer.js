@@ -3,6 +3,9 @@ import { LightningElement, track } from 'lwc';
 import { subscribe } from 'services/pubsub';
 
 export default class logViewer extends LightningElement {
+    errorCenterX = 0;
+    hasError = true;
+    errorPopoverOpen = false;
     goToPlaceholder = 'Go to line';
     goTohasLabel = false;
     reRenderVal = false;
@@ -560,5 +563,38 @@ export default class logViewer extends LightningElement {
         // console.log('linenumber', event.detail);
         const lNum = event.detail;
         this.goToPage(lNum);
+    }
+
+    handleErrorClick() {
+        this.errorPopoverOpen = !this.errorPopoverOpen;
+        const button = this.template.querySelector('.error-btn');
+        const { horizontal, vertical } = this.getWidgetPadding();
+        console.log('button', button);
+        const rect = button.getBoundingClientRect();
+        console.log('horizontal', horizontal);
+        this.errorCenterX = (rect.left + rect.right) / 2 - 24;
+        console.log('centerX', this.errorCenterX);
+    }
+
+    closeErrorPopover() {
+        this.errorPopoverOpen = false;
+    }
+
+    getWidgetPadding() {
+        const element = this.template.querySelector('.widget');
+        const rect = element.getBoundingClientRect();
+        console.log('rect', rect);
+        // Calculate content width/height
+        const contentWidth = element.clientWidth;
+        const contentHeight = element.clientHeight;
+
+        // Calculate padding
+        const horizontalPadding = rect.width - contentWidth;
+        const verticalPadding = rect.height - contentHeight;
+
+        return {
+            horizontal: horizontalPadding,
+            vertical: verticalPadding
+        };
     }
 }
