@@ -1,5 +1,10 @@
 import { LightningElement } from 'lwc';
-import { eventsRegexMain, timeStampRegex } from 'parser/utilVariables';
+import {
+    eventsRegexMain,
+    timeStampRegex,
+    fatalErrRegex,
+    expThrownRegex
+} from 'parser/utilVariables';
 
 import { publish } from 'services/pubsub';
 // import { publish, MessageContext } from 'lightning/messageService';
@@ -65,6 +70,7 @@ export default class LogFileProcessor extends LightningElement {
     STD_EXP_MATCHER = new RegExp('^[0-9:.]*\\s\\([0-9]*\\)(|)[A-Z_]*.*');
     EXE_ANONYMOUS_MATCHER = new RegExp('^(Execute\\sAnonymous:\\s).*');
     result = [];
+    errors = [];
     isCurUnitCU = true;
     codeUnitsStack = [];
     methodUnitsStack = [];
@@ -78,7 +84,8 @@ export default class LogFileProcessor extends LightningElement {
         fileName: '',
         nofLines: 0,
         nofCodeUnits: 0,
-        nofMethodUnits: 0
+        nofMethodUnits: 0,
+        errors: []
     };
     fileDataPartial = [];
     //     @wire(MessageContext)
@@ -94,17 +101,12 @@ export default class LogFileProcessor extends LightningElement {
         console.log('[fileUploader.js] File Size: ', rawFile.size);
         reader.onload = (e) => {
             const file = e.target.result;
-            // console.log(file);
-            // console.log(file);
             this.fileData = file.split(/\r\n|\n/);
 
             console.log(
                 '[fileUploader.js] No.of Lines: ',
                 this.fileData.length
             );
-            // lines.forEach((line) => {
-            //   console.log("Single Line: ", line);
-            // });
             this.processLogData();
         };
         reader.onerror = (e) => {
@@ -161,6 +163,27 @@ export default class LogFileProcessor extends LightningElement {
                         console.error(e);
                     }
                 } else {
+                    if (lineEvent === 'EXCEPTION_THROWN') {
+                        if (expThrownRegex.test(line)) {
+                            let errStr = line.split('|').pop().trim();
+                            this.createErrorObject(
+                                idx + 1,
+                                'EXCEPTION_THROWN',
+                                errStr
+                            );
+                            console.log('Exception Thrown: ', errStr);
+                        }
+                    } else if (lineEvent === 'FATAL_ERROR') {
+                        if (fatalErrRegex.test(line)) {
+                            let errStr = line.split('|').pop().trim();
+                            console.log('Fatal Error: ', errStr);
+                            this.createErrorObject(
+                                idx + 1,
+                                'FATAL_ERROR',
+                                errStr
+                            );
+                        }
+                    }
                     this.addLinetoCUorMU(line, lineEvent, idx);
                 }
 
@@ -429,6 +452,7 @@ export default class LogFileProcessor extends LightningElement {
         this.fileMetadata.nofCodeUnits = this.codeUnitsCount;
         this.fileMetadata.nofMethodUnits = this.methodUnitsCount;
         this.fileMetadata.nofLines = this.fileData.length;
+        this.fileMetadata.errors = this.errors;
         // console.log("Event Picklist Values: ", this.eventsPicklistValues);
         const payload = {
             fileMetadata: this.fileMetadata,
@@ -447,5 +471,17 @@ export default class LogFileProcessor extends LightningElement {
             return timeStamp;
         }
         return null;
+    }
+
+    createErrorObject(line, event, errMsg) {
+        let idx = this.errors.length + 1;
+        const errObj = {
+            id: idx,
+            line: line,
+            errEvent: event,
+            message: errMsg
+        };
+        this.errors.push(errObj);
+        // console.log('Error Object: ', errObj);
     }
 }

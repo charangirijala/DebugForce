@@ -8,6 +8,18 @@ a {
     overflow: visible;
     z-index: 10;
 }
+.log-errors {
+    margin-right: auto;
+    color: #ba0517;
+}
+
+.log-errors-no-err-text {
+    color: #396547;
+}
+
+.log-errors-text {
+    color: #ba0517;
+}
 
 .search-res {
     background-color: rgb(250, 255, 189);
@@ -324,10 +336,6 @@ th {
     border-color: #76716b;
 }
 
-.utility-bar {
-    flex-direction: row-reverse;
-}
-
 .utility-bar-span-text {
     align-self: center;
     font-size: 0.9rem;
@@ -416,9 +424,4 @@ th {
 
 .dashboard-widget {
     background-color: white;
-}
-
-.call-stack {
-    order: 1;
-    margin-right: auto;
 }

@@ -1,0 +1,30 @@
+.slds-popover {
+    position: absolute;
+    bottom: 1.5rem;
+}
+
+.line-btn {
+    padding: 0px;
+    line-height: normal;
+    color: #0070d2;
+    border: none;
+    box-shadow: none;
+}
+
+.line-btn:hover {
+    text-decoration: underline;
+    box-shadow: none;
+}
+
+.slds-popover__body p {
+    line-height: normal;
+}
+
+.err-event {
+    color: #ba0517;
+}
+
+.err-body {
+    max-height: 25rem;
+    overflow: auto;
+}
