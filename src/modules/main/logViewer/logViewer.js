@@ -4,7 +4,7 @@ import { subscribe } from 'services/pubsub';
 
 export default class logViewer extends LightningElement {
     errorCenterX = 0;
-    hasError = true;
+    errors = [];
     errorPopoverOpen = false;
     goToPlaceholder = 'Go to line';
     goTohasLabel = false;
@@ -132,8 +132,11 @@ export default class logViewer extends LightningElement {
                         );
                         this.calculations();
                     }
-                    if (data.fileMetadata)
+                    if (data.fileMetadata) {
                         this.fileMetadata = data.fileMetadata;
+                        this.errors = data.fileMetadata.errors;
+                    }
+
                     if (data.result) {
                         // console.log('Result: ', data.result);
                         this.result = data.result;
@@ -157,6 +160,10 @@ export default class logViewer extends LightningElement {
             this.isFilterPopOverShowing === false
             ? true
             : false;
+    }
+
+    get errCount() {
+        return this.errors.length;
     }
 
     renderedCallback() {
@@ -569,11 +576,11 @@ export default class logViewer extends LightningElement {
         this.errorPopoverOpen = !this.errorPopoverOpen;
         const button = this.template.querySelector('.error-btn');
         const { horizontal, vertical } = this.getWidgetPadding();
-        console.log('button', button);
+        // console.log('button', button);
         const rect = button.getBoundingClientRect();
-        console.log('horizontal', horizontal);
+        // console.log('horizontal', horizontal);
         this.errorCenterX = (rect.left + rect.right) / 2 - 24;
-        console.log('centerX', this.errorCenterX);
+        // console.log('centerX', this.errorCenterX);
     }
 
     closeErrorPopover() {
@@ -583,7 +590,7 @@ export default class logViewer extends LightningElement {
     getWidgetPadding() {
         const element = this.template.querySelector('.widget');
         const rect = element.getBoundingClientRect();
-        console.log('rect', rect);
+        // console.log('rect', rect);
         // Calculate content width/height
         const contentWidth = element.clientWidth;
         const contentHeight = element.clientHeight;
@@ -596,5 +603,13 @@ export default class logViewer extends LightningElement {
             horizontal: horizontalPadding,
             vertical: verticalPadding
         };
+    }
+
+    get hasErrors() {
+        return this.errors.length > 0;
+    }
+    goToErrLine(event) {
+        // console.log('line', event.detail);
+        this.goToPage(event.detail);
     }
 }

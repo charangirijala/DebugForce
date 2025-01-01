@@ -87,3 +87,10 @@ eventsRegexMain.set(
 export let timeStampRegex = new RegExp(
     '(\\d{2}:\\d{2}:\\d{2})\\.(\\d+)\\s\\((\\d+)\\)'
 );
+
+export let fatalErrRegex = new RegExp(
+    '^[0-9:.]+\\s\\([0-9]+\\)\\|FATAL_ERROR\\|(.)+'
+);
+export let expThrownRegex = new RegExp(
+    '^[0-9:.]+\\s\\([0-9]+\\)\\|(EXCEPTION_THROWN\\|)[(\\[EXTERNAL\\])(0-9)]+(\\|)(.)+'
+);

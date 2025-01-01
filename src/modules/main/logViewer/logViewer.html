@@ -781,7 +781,7 @@
                     </button>
                 </li>
                 <li class="slds-utility-bar__item log-errors">
-                    <template lwc:if={hasError}>
+                    <template lwc:if={hasErrors}>
                         <button
                             class="slds-button slds-utility-bar__action .slds-theme_error error-btn"
                             onclick={handleErrorClick}
@@ -795,7 +795,7 @@
                                 ></use></svg
                             ><span
                                 class="slds-utility-bar__text log-errors-text"
-                                >5 Errors</span
+                                >{errCount} Errors</span
                             >
                         </button>
                     </template>
@@ -893,11 +893,13 @@
                 ></ui-utility-panel>
             </template>
             <!-- log errors -->
-            <ui-log-errors
-                position-x={errorCenterX}
-                is-open={errorPopoverOpen}
-                onclose={closeErrorPopover}
-            ></ui-log-errors>
         </footer>
     </div>
+    <ui-log-errors
+        position-x={errorCenterX}
+        is-open={errorPopoverOpen}
+        onclose={closeErrorPopover}
+        ongotoline={goToErrLine}
+        errors={errors}
+    ></ui-log-errors>
 </template>
