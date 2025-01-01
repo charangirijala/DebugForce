@@ -128,13 +128,13 @@ export default class LogFileProcessor extends LightningElement {
                     const RegexMap = eventsRegexMain.get(lineEvent);
                     for (let [key, value] of RegexMap) {
                         if (key.test(line)) {
-                            console.log(
-                                value,
-                                '=>',
-                                key.test(line),
-                                '=>',
-                                line
-                            );
+                            // console.log(
+                            //     value,
+                            //     '=>',
+                            //     key.test(line),
+                            //     '=>',
+                            //     line
+                            // );
                             this.createCodeUnit(line, value, idx + 1);
                             break;
                         }
@@ -171,12 +171,12 @@ export default class LogFileProcessor extends LightningElement {
                                 'EXCEPTION_THROWN',
                                 errStr
                             );
-                            console.log('Exception Thrown: ', errStr);
+                            // console.log('Exception Thrown: ', errStr);
                         }
                     } else if (lineEvent === 'FATAL_ERROR') {
                         if (fatalErrRegex.test(line)) {
                             let errStr = line.split('|').pop().trim();
-                            console.log('Fatal Error: ', errStr);
+                            // console.log('Fatal Error: ', errStr);
                             this.createErrorObject(
                                 idx + 1,
                                 'FATAL_ERROR',
@@ -216,7 +216,7 @@ export default class LogFileProcessor extends LightningElement {
      */
     createCodeUnit(line, type, index) {
         let enteredCondition = false;
-        console.log('Type: ', type);
+        // console.log('Type: ', type);
         let cu = {};
         cu.unitDuration = index;
         if (type === 'Class-Action') {
@@ -418,7 +418,7 @@ export default class LogFileProcessor extends LightningElement {
         if (this.codeUnitsStack.length !== 0) {
             // console.log('Entered length condition');
             let CUTop = this.currentCU();
-            console.log(CUTop.childUnitsandLines);
+            // console.log(CUTop.childUnitsandLines);
             if (
                 CUTop.childUnitsandLines === null ||
                 CUTop.childUnitsandLines === undefined
