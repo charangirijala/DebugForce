@@ -151,6 +151,70 @@
                                 >
                                     <span
                                         class="slds-truncate"
+                                        title="SOQL Count"
+                                        >SOQL Count</span
+                                    >
+                                </div>
+                            </div>
+                            <div class="slds-resizable">
+                                <input
+                                    type="range"
+                                    aria-label="Line duration column width"
+                                    class="slds-resizable__input slds-assistive-text"
+                                    max="1000"
+                                    min="20"
+                                    tabindex="-1"
+                                />
+                                <span class="slds-resizable__handle">
+                                    <span
+                                        class="slds-resizable__divider"
+                                    ></span>
+                                </span>
+                            </div>
+                        </th>
+                        <th
+                            aria-sort="none"
+                            class="slds-has-button-menu slds-is-resizable slds-is-sortable"
+                            scope="col"
+                        >
+                            <div class="slds-th__action slds-text-link_reset">
+                                <div
+                                    class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate"
+                                >
+                                    <span
+                                        class="slds-truncate"
+                                        title="DML Count"
+                                        >DML Count</span
+                                    >
+                                </div>
+                            </div>
+                            <div class="slds-resizable">
+                                <input
+                                    type="range"
+                                    aria-label="Line duration column width"
+                                    class="slds-resizable__input slds-assistive-text"
+                                    max="1000"
+                                    min="20"
+                                    tabindex="-1"
+                                />
+                                <span class="slds-resizable__handle">
+                                    <span
+                                        class="slds-resizable__divider"
+                                    ></span>
+                                </span>
+                            </div>
+                        </th>
+                        <th
+                            aria-sort="none"
+                            class="slds-has-button-menu slds-is-resizable slds-is-sortable"
+                            scope="col"
+                        >
+                            <div class="slds-th__action slds-text-link_reset">
+                                <div
+                                    class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate"
+                                >
+                                    <span
+                                        class="slds-truncate"
                                         title="Total Time (ms)"
                                         >Total Time (ms)</span
                                     >
@@ -231,6 +295,28 @@
                                         <span class="line-length">
                                             [{node.unitLength} Lines]</span
                                         >
+                                    </div>
+                                </td>
+                                <td
+                                    data-label="Total Time (ms)"
+                                    role="gridcell"
+                                >
+                                    <div
+                                        class="slds-truncate"
+                                        title={node.soqlCount}
+                                    >
+                                        {node.soqlCount}
+                                    </div>
+                                </td>
+                                <td
+                                    data-label="Total Time (ms)"
+                                    role="gridcell"
+                                >
+                                    <div
+                                        class="slds-truncate"
+                                        title={node.dmlCount}
+                                    >
+                                        {node.dmlCount}
                                     </div>
                                 </td>
                                 <td
