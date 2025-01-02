@@ -110,7 +110,9 @@ export default class logViewer extends LightningElement {
         fileName: '',
         nofLines: 0,
         nofCodeUnits: 0,
-        nofMethodUnits: 0
+        nofMethodUnits: 0,
+        soqlCount: 0,
+        dmlCount: 0
     };
     noOfPages = 0;
     pageNumber = 0;

@@ -147,6 +147,8 @@ function parseDebugLogUnits(obj, units = [], level = 1, parentId) {
             type: obj.cuType,
             name: obj.cuName,
             timeInMS: timeInMS,
+            dmlCount: obj.dmlCount,
+            soqlCount: obj.soqlCount,
             level: level,
             unitDuration: obj.unitDuration,
             unitLength: duration,
@@ -181,6 +183,8 @@ function parseDebugLogUnits(obj, units = [], level = 1, parentId) {
             timeInMS: timeInMS,
             type: obj.type,
             level: level,
+            dmlCount: obj.dmlCount,
+            soqlCount: obj.soqlCount,
             unitDuration: obj.unitDuration,
             unitLength: duration,
             hasChild: Object.values(obj).some(hasChildUnits)

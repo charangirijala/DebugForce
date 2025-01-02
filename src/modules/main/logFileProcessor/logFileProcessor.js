@@ -77,6 +77,8 @@ export default class LogFileProcessor extends LightningElement {
     stdExpCount = 0;
     codeUnitsCount = 0;
     methodUnitsCount = 0;
+    soqlCount = 0;
+    dmlCount = 0;
     eventsPicklistValues = new Set();
     execAnonyCount = 0;
     fileData;
@@ -85,7 +87,9 @@ export default class LogFileProcessor extends LightningElement {
         nofLines: 0,
         nofCodeUnits: 0,
         nofMethodUnits: 0,
-        errors: []
+        errors: [],
+        soqlCount: 0,
+        dmlCount: 0
     };
     fileDataPartial = [];
     //     @wire(MessageContext)
@@ -115,6 +119,8 @@ export default class LogFileProcessor extends LightningElement {
         reader.readAsText(rawFile);
     }
     processLogData() {
+        let isSoql = false;
+        let isDml = false;
         this.fileData.forEach((line, idx) => {
             if (this.STD_EXP_MATCHER.test(line)) {
                 this.stdExpCount++;
@@ -128,13 +134,6 @@ export default class LogFileProcessor extends LightningElement {
                     const RegexMap = eventsRegexMain.get(lineEvent);
                     for (let [key, value] of RegexMap) {
                         if (key.test(line)) {
-                            // console.log(
-                            //     value,
-                            //     '=>',
-                            //     key.test(line),
-                            //     '=>',
-                            //     line
-                            // );
                             this.createCodeUnit(line, value, idx + 1);
                             break;
                         }
@@ -183,8 +182,16 @@ export default class LogFileProcessor extends LightningElement {
                                 errStr
                             );
                         }
+                    } else if (lineEvent === 'SOQL_EXECUTE_BEGIN') {
+                        this.soqlCount++;
+                        isSoql = true;
+                    } else if (lineEvent === 'DML_BEGIN') {
+                        this.dmlCount++;
+                        isDml = true;
                     }
-                    this.addLinetoCUorMU(line, lineEvent, idx);
+                    this.addLinetoCUorMU(line, lineEvent, idx, isSoql, isDml);
+                    isDml = false;
+                    isSoql = false;
                 }
 
                 this.addToFileDataPartial(line, lineEvent, idx + 1);
@@ -219,6 +226,8 @@ export default class LogFileProcessor extends LightningElement {
         // console.log('Type: ', type);
         let cu = {};
         cu.unitDuration = index;
+        cu.soqlCount = 0;
+        cu.dmlCount = 0;
         if (type === 'Class-Action') {
             enteredCondition = true;
             const splitArr = line.split('|');
@@ -338,6 +347,8 @@ export default class LogFileProcessor extends LightningElement {
          */
         let methodUnit = {};
         methodUnit.unitDuration = index;
+        methodUnit.soqlCount = 0;
+        methodUnit.dmlCount = 0;
         if (type === 'Method-Generic') {
             this.isCurUnitCU = false;
             this.methodUnitsCount++;
@@ -357,7 +368,7 @@ export default class LogFileProcessor extends LightningElement {
                     .substring(methodUnit.methodTitle.lastIndexOf('.') + 1) +
                 s2;
             //Once methodUnit fields are filled push it to methodUnitsStack
-            this.addMUtoResult(methodUnit);
+            this.addMUorLinetoResult(methodUnit);
             this.methodUnitsStack.push(methodUnit);
         } else if (type === 'Method-System') {
             this.isCurUnitCU = false;
@@ -365,7 +376,7 @@ export default class LogFileProcessor extends LightningElement {
             methodUnit.methodTitle = 'System Method';
             methodUnit.type = 'System Method';
             methodUnit.methodName = line.substring(line.lastIndexOf('|') + 1);
-            this.addMUtoResult(methodUnit);
+            this.addMUorLinetoResult(methodUnit);
             this.methodUnitsStack.push(methodUnit);
         }
         methodUnit.startTime = this.extractTimeStamp(line);
@@ -393,7 +404,7 @@ export default class LogFileProcessor extends LightningElement {
         return this.codeUnitsStack[this.codeUnitsStack.length - 1];
     }
 
-    addMUtoResult(methodUnit) {
+    addMUorLinetoResult(methodUnit, isSoql, isDml) {
         //check if methodUnitsStack is empty
         if (this.methodUnitsStack.length !== 0) {
             let MUTop = this.currentMU();
@@ -403,6 +414,16 @@ export default class LogFileProcessor extends LightningElement {
                 MUTop.childUnitsandLines = [];
                 MUTop.childUnitsandLines.push(methodUnit);
             }
+            if (isSoql) {
+                let count = MUTop.soqlCount + 1;
+                MUTop.soqlCount = count;
+                // console.log(MUTop);
+            }
+            if (isDml) {
+                let count = MUTop.soqlCount + 1;
+                MUTop.dmlCount = count;
+                // console.log(MUTop);
+            }
         } else if (this.codeUnitsStack.length !== 0) {
             let CUTop = this.currentCU();
             if (CUTop.childUnitsandLines) {
@@ -410,6 +431,16 @@ export default class LogFileProcessor extends LightningElement {
             } else {
                 CUTop.childUnitsandLines = [];
                 CUTop.childUnitsandLines.push(methodUnit);
+            }
+            if (isSoql) {
+                let count = CUTop.soqlCount + 1;
+                CUTop.soqlCount = count;
+                // console.log(CUTop);
+            }
+            if (isDml) {
+                let count = CUTop.dmlCount + 1;
+                CUTop.dmlCount = count;
+                // console.log(CUTop);
             }
         }
     }
@@ -434,9 +465,9 @@ export default class LogFileProcessor extends LightningElement {
         }
     }
 
-    addLinetoCUorMU(line, event, idx) {
+    addLinetoCUorMU(line, event, idx, isSoql, isDml) {
         let lineDetails = { line: line, event: event, lineNumber: idx };
-        this.addMUtoResult(lineDetails);
+        this.addMUorLinetoResult(lineDetails, isSoql, isDml);
     }
 
     addToFileDataPartial(line, event, lineNumber) {
@@ -453,6 +484,9 @@ export default class LogFileProcessor extends LightningElement {
         this.fileMetadata.nofMethodUnits = this.methodUnitsCount;
         this.fileMetadata.nofLines = this.fileData.length;
         this.fileMetadata.errors = this.errors;
+        this.fileMetadata.soqlCount = this.soqlCount;
+        this.fileMetadata.dmlCount = this.dmlCount;
+
         // console.log("Event Picklist Values: ", this.eventsPicklistValues);
         const payload = {
             fileMetadata: this.fileMetadata,
