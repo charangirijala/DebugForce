@@ -50,7 +50,6 @@
                                                     class="slds-m-left--xx-small search-button"
                                                 >
                                                     <ui-input
-                                                        has-label={goTohasLabel}
                                                         placeholder={goToPlaceholder}
                                                         oninputchange={goToLine}
                                                     ></ui-input>
@@ -307,7 +306,6 @@
                                                         >
                                                             <div
                                                                 class="widgets"
-                                                                style={dynamicHeight}
                                                             >
                                                                 <!-- Filter Panel -->
                                                                 <div
@@ -383,6 +381,7 @@
                                                                                     <ui-multi-select-combobox
                                                                                         label="Value"
                                                                                         name="Value"
+                                                                                        has-label="true"
                                                                                         options={filterValueOptions}
                                                                                         onclose={handleFilterValueChange}
                                                                                     ></ui-multi-select-combobox>
@@ -393,6 +392,7 @@
                                                                                     <ui-input
                                                                                         label="Value"
                                                                                         type="text"
+                                                                                        has-label={filterHasLabel}
                                                                                         minimum-length="2"
                                                                                         text-value={filterValue}
                                                                                         onvalchange={handleFilterTextChange}
@@ -655,7 +655,8 @@
                                                                                                         <li>
                                                                                                             <div
                                                                                                                 class="metricsElement metricsTitle"
-                                                                                                                title="Total Records"
+                                                                                                                title="Total
+                                                                                                                Lines"
                                                                                                             >
                                                                                                                 Total
                                                                                                                 Lines

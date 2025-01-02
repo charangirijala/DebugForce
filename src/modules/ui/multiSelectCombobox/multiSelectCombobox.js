@@ -126,10 +126,16 @@ export default class MultiSelectCombobox extends LightningElement {
             this.isInitialized = true;
             this.setSelection();
         }
+
+        console.log('Current options: ', this.currentOptions);
     }
 
     disconnectedCallback() {
         document.removeEventListener('click', this.close());
+    }
+
+    get hasOptions() {
+        return this.currentOptions.length > 0;
     }
 
     handleChange(event) {

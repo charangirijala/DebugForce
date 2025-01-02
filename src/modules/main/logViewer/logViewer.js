@@ -6,6 +6,7 @@ export default class logViewer extends LightningElement {
     errorCenterX = 0;
     errors = [];
     errorPopoverOpen = false;
+    filterHasLabel = true;
     goToPlaceholder = 'Go to line';
     goTohasLabel = false;
     reRenderVal = false;
@@ -101,7 +102,7 @@ export default class logViewer extends LightningElement {
                 'slds-filters__item slds-grid slds-grid_vertical-align-center'
         }
     ];
-    dynamicHeight;
+
     filterClass =
         'slds-panel slds-size_medium slds-panel_docked slds-panel_docked-right slds-panel_drawer filter-panel slds-hidden';
     pageNumberClass = 'slds-input';
@@ -156,10 +157,10 @@ export default class logViewer extends LightningElement {
     }
 
     get ShowFilterSave() {
-        return this.isFilterEditing === true &&
-            this.isFilterPopOverShowing === false
-            ? true
-            : false;
+        return (
+            this.isFilterEditing &&
+            this.activeFilters.some((filter) => filter.isEdited === true)
+        );
     }
 
     get errCount() {
@@ -169,12 +170,15 @@ export default class logViewer extends LightningElement {
     renderedCallback() {
         const popover = this.template.querySelector('section');
 
+        //Filter button logic
         if (popover) {
             const popoverHeight = popover.getBoundingClientRect().height / 2;
             console.log('PopoverTOp: ', this.popoverTop);
             const height = this.popoverTop - popoverHeight;
             popover.style.top = `${height}px `;
         }
+
+        // Search button logic
         if (this.isSearching) {
             const searchButton = this.template.querySelector('.search-button');
             if (searchButton) {
@@ -331,6 +335,7 @@ export default class logViewer extends LightningElement {
         let idxToRemove = [];
         for (let i = 0; i < this.activeFilters.length; i++) {
             let filter = this.activeFilters[i];
+            filter.isEdited = false;
             if (
                 filter.field === 'Line' &&
                 filter.operator !== '' &&
@@ -406,6 +411,7 @@ export default class logViewer extends LightningElement {
             ].field = fieldVal[0].value;
             this.activeFilters[this.currentEditFilterIdx].isPicklist =
                 this.fieldValue === 'Event' ? true : false;
+            // this.activeFilters[this.currentEditFilterIdx].isEdited = true;
         }
     }
 
@@ -416,6 +422,7 @@ export default class logViewer extends LightningElement {
             this.operatorValue = this.activeFilters[
                 this.currentEditFilterIdx
             ].operator = opVal[0].value;
+            // this.activeFilters[this.currentEditFilterIdx].isEdited = true;
         }
     }
 
@@ -427,6 +434,7 @@ export default class logViewer extends LightningElement {
                     return filter.value;
                 });
         }
+        this.activeFilters[this.currentEditFilterIdx].isEdited = true;
         this.filterPickListValue = [];
         console.log('Selected items: ', this.filterPickListValue);
     }
@@ -441,6 +449,7 @@ export default class logViewer extends LightningElement {
 
     handleFilterTextChange(event) {
         console.log('Filter Text Changed ', event.detail);
+        this.activeFilters[this.currentEditFilterIdx].isEdited = true;
         this.filterValue = this.activeFilters[this.currentEditFilterIdx].value =
             event.detail.textValue;
     }

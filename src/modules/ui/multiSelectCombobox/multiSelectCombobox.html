@@ -52,13 +52,20 @@
                             class="slds-listbox slds-listbox_vertical"
                             role="presentation"
                         >
-                            <template for:each={currentOptions} for:item="item">
-                                <ui-multi-select-combobox-item
-                                    key={item.value}
-                                    item={item}
-                                    onchange={handleChange}
+                            <template lwc:if={hasOptions}>
+                                <template
+                                    for:each={currentOptions}
+                                    for:item="item"
                                 >
-                                </ui-multi-select-combobox-item>
+                                    <div key={item.value}>
+                                        <!-- <ui-multi-select-combobox-item
+                                            item={item}
+                                            onchange={handleChange}
+                                        >
+                                        </ui-multi-select-combobox-item> -->
+                                        <div>{item.label} {item.value}</div>
+                                    </div>
+                                </template>
                             </template>
                         </ul>
                     </div>
