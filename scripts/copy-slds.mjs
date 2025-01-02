@@ -7,7 +7,3 @@ fs.cp(
         console.log('Done copying SLDS resources');
     }
 );
-
-fs.cp('src/logo', './src', { recursive: true }, () => {
-    console.log('Done copying logos');
-});
