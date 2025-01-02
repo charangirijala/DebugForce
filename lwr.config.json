@@ -4,7 +4,7 @@
         {
             "id": "example",
             "path": "/",
-            "layoutTemplate":"$layoutsDir/index.html",
+            "layoutTemplate": "$layoutsDir/index.html",
             "rootComponent": "my/app",
             "bootstrap": {
                 "syntheticShadow": true
