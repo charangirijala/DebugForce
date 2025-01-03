@@ -10,6 +10,10 @@
     width: var(--fullWidth);
 }
 
+.slds-template_default {
+    padding: 0.5rem;
+}
+
 .oneCenterStage {
     overflow: visible;
     background-color: transparent;

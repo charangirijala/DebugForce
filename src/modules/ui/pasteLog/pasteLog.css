@@ -1,0 +1,11 @@
+:host {
+    --slds-c-textarea-sizing-min-height: 16rem;
+}
+
+.btn-container {
+    justify-content: end;
+}
+
+.clear-btn {
+    color: #747474;
+}
