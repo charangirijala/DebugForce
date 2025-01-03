@@ -6,7 +6,7 @@ import {
     expThrownRegex
 } from 'parser/utilVariables';
 
-import { publish } from 'services/pubsub';
+import { publish, subscribe } from 'services/pubsub';
 // import { publish, MessageContext } from 'lightning/messageService';
 
 // import STATE from '@salesforce/messageChannel/App_Service__c';
@@ -97,6 +97,18 @@ export default class LogFileProcessor extends LightningElement {
     get acceptedFormats() {
         return ['.log', '.txt'];
     }
+
+    connectedCallback() {
+        subscribe('logtext', (data) => {
+            if (Array.isArray(data) && data.length > 0) {
+                this.fileData = data;
+                this.processLogData();
+            } else if (data.length === 0) {
+                this.fileData = [];
+                this.processLogData();
+            }
+        });
+    }
     handleFileUpload(event) {
         var reader = new FileReader();
         console.log('[fileUploader.js] Processing Uploaded file...');
@@ -119,6 +131,7 @@ export default class LogFileProcessor extends LightningElement {
         reader.readAsText(rawFile);
     }
     processLogData() {
+        this.resetVars();
         let isSoql = false;
         let isDml = false;
         this.fileData.forEach((line, idx) => {
@@ -517,5 +530,21 @@ export default class LogFileProcessor extends LightningElement {
         };
         this.errors.push(errObj);
         // console.log('Error Object: ', errObj);
+    }
+
+    resetVars() {
+        this.result = [];
+        this.errors = [];
+        this.isCurUnitCU = true;
+        this.codeUnitsStack = [];
+        this.methodUnitsStack = [];
+        this.stdExpCount = 0;
+        this.codeUnitsCount = 0;
+        this.methodUnitsCount = 0;
+        this.soqlCount = 0;
+        this.dmlCount = 0;
+        this.eventsPicklistValues = new Set();
+        this.execAnonyCount = 0;
+        this.fileDataPartial = [];
     }
 }

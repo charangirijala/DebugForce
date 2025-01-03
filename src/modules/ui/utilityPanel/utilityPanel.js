@@ -1,10 +1,24 @@
 import { api, LightningElement, track } from 'lwc';
 import { parseResultToTree } from 'parser/callTree';
+import { subscribe } from 'services/pubsub';
 
 export default class UtilityPanel extends LightningElement {
     @api panelToggle = false;
     isLoaded = false;
+    appChannelSub = null;
+    activeApp = 'Log Viewer';
+    get isLogViewer() {
+        return this.activeApp === 'Log Viewer';
+    }
 
+    connectedCallback() {
+        if (!this.appChannelSub) {
+            this.appChannelSub = subscribe('appChannel', (data) => {
+                this.activeApp = data.activeApp;
+                // console.log('activeApp: ', this.activeApp);
+            });
+        }
+    }
     renderedCallback() {
         if (this.isLoaded === false) {
             this.isLoaded = true;

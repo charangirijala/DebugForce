@@ -10,7 +10,7 @@ import { subscribe } from 'services/pubsub';
 export default class AppContent extends LightningElement {
     //     @wire(MessageContext)
     //     messageContext;
-    activeApp = 'Home';
+    activeApp;
     appChannelSub = null;
     connectedCallback() {
         if (!this.appChannelSub) {

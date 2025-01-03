@@ -1,7 +1,9 @@
 .nav-item {
     color: rgb(24, 24, 24);
 }
-
+img {
+    width: 37px;
+}
 a {
     text-decoration: none !important;
 }
