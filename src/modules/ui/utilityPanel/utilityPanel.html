@@ -33,325 +33,304 @@
                 </div>
             </div>
             <div class="slds-utility-panel__body">
-                <table
-                    class="slds-table slds-table_bordered slds-table_edit slds-table_fixed-layout slds-table_resizable-cols slds-tree slds-table_tree"
-                    role="treegrid"
-                    aria-label="Log Call Stack"
+                <div
+                    id="containerDiv"
+                    onmousemove={handlemousemove}
+                    onmouseup={handlemouseup}
+                    ondblclick={handledblclickresizable}
+                    onscroll={tableOuterDivScrolled}
+                    class="slds-table_header-fixed_container slds-border_right slds-border_left tableScroll"
                 >
-                    <thead>
-                        <tr class="slds-line-height_reset">
-                            <th
-                                aria-sort="none"
-                                class="slds-has-button-menu slds-is-resizable slds-is-sortable"
-                                scope="col"
-                            >
-                                <div
-                                    class="slds-th__action slds-text-link_reset"
-                                    tabindex="-1"
-                                >
-                                    <div
-                                        class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate"
-                                    >
-                                        <span
-                                            class="slds-truncate"
-                                            title="Unit Name"
-                                            >Name</span
-                                        >
-                                    </div>
-                                </div>
-                                <div class="slds-resizable">
-                                    <input
-                                        type="range"
-                                        aria-label="Account Name column width"
-                                        class="slds-resizable__input slds-assistive-text"
-                                        id="cell-resize-handle-136"
-                                        max="1000"
-                                        min="20"
-                                        tabindex="-1"
-                                        oninput={handleResize}
-                                    />
-                                    <span class="slds-resizable__handle">
-                                        <span
-                                            class="slds-resizable__divider"
-                                        ></span>
-                                    </span>
-                                </div>
-                            </th>
-                            <th
-                                aria-sort="none"
-                                class="slds-has-button-menu slds-is-resizable slds-is-sortable"
-                                scope="col"
-                            >
-                                <div
-                                    class="slds-th__action slds-text-link_reset"
-                                >
-                                    <div
-                                        class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate"
-                                    >
-                                        <span class="slds-truncate" title="Type"
-                                            >Type</span
-                                        >
-                                    </div>
-                                </div>
-                                <div class="slds-resizable">
-                                    <input
-                                        type="range"
-                                        aria-label="Employees column width"
-                                        class="slds-resizable__input slds-assistive-text"
-                                        id="cell-resize-handle-137"
-                                        max="1000"
-                                        min="20"
-                                        tabindex="-1"
-                                    />
-                                    <span class="slds-resizable__handle">
-                                        <span
-                                            class="slds-resizable__divider"
-                                        ></span>
-                                    </span>
-                                </div>
-                            </th>
-                            <th
-                                aria-sort="none"
-                                class="slds-has-button-menu slds-is-resizable slds-is-sortable"
-                                scope="col"
-                            >
-                                <div
-                                    class="slds-th__action slds-text-link_reset"
-                                >
-                                    <div
-                                        class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate"
-                                    >
-                                        <span
-                                            class="slds-truncate"
-                                            title="Line Duration"
-                                            >Line Duration</span
-                                        >
-                                    </div>
-                                </div>
-                                <div class="slds-resizable">
-                                    <input
-                                        type="range"
-                                        aria-label="Line duration column width"
-                                        class="slds-resizable__input slds-assistive-text"
-                                        id="cell-resize-handle-138"
-                                        max="1000"
-                                        min="20"
-                                        tabindex="-1"
-                                    />
-                                    <span class="slds-resizable__handle">
-                                        <span
-                                            class="slds-resizable__divider"
-                                        ></span>
-                                    </span>
-                                </div>
-                            </th>
-                            <th
-                                aria-sort="none"
-                                class="slds-has-button-menu slds-is-resizable slds-is-sortable"
-                                scope="col"
-                            >
-                                <div
-                                    class="slds-th__action slds-text-link_reset"
-                                >
-                                    <div
-                                        class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate"
-                                    >
-                                        <span
-                                            class="slds-truncate"
-                                            title="SOQL Count"
-                                            >SOQL Count</span
-                                        >
-                                    </div>
-                                </div>
-                                <div class="slds-resizable">
-                                    <input
-                                        type="range"
-                                        aria-label="Line duration column width"
-                                        class="slds-resizable__input slds-assistive-text"
-                                        max="1000"
-                                        min="20"
-                                        tabindex="-1"
-                                    />
-                                    <span class="slds-resizable__handle">
-                                        <span
-                                            class="slds-resizable__divider"
-                                        ></span>
-                                    </span>
-                                </div>
-                            </th>
-                            <th
-                                aria-sort="none"
-                                class="slds-has-button-menu slds-is-resizable slds-is-sortable"
-                                scope="col"
-                            >
-                                <div
-                                    class="slds-th__action slds-text-link_reset"
-                                >
-                                    <div
-                                        class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate"
-                                    >
-                                        <span
-                                            class="slds-truncate"
-                                            title="DML Count"
-                                            >DML Count</span
-                                        >
-                                    </div>
-                                </div>
-                                <div class="slds-resizable">
-                                    <input
-                                        type="range"
-                                        aria-label="Line duration column width"
-                                        class="slds-resizable__input slds-assistive-text"
-                                        max="1000"
-                                        min="20"
-                                        tabindex="-1"
-                                    />
-                                    <span class="slds-resizable__handle">
-                                        <span
-                                            class="slds-resizable__divider"
-                                        ></span>
-                                    </span>
-                                </div>
-                            </th>
-                            <th
-                                aria-sort="none"
-                                class="slds-has-button-menu slds-is-resizable slds-is-sortable"
-                                scope="col"
-                            >
-                                <div
-                                    class="slds-th__action slds-text-link_reset"
-                                >
-                                    <div
-                                        class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate"
-                                    >
-                                        <span
-                                            class="slds-truncate"
-                                            title="Total Time (ms)"
-                                            >Total Time (ms)</span
-                                        >
-                                    </div>
-                                </div>
-                                <div class="slds-resizable">
-                                    <input
-                                        type="range"
-                                        aria-label="Line duration column width"
-                                        class="slds-resizable__input slds-assistive-text"
-                                        max="1000"
-                                        min="20"
-                                        tabindex="-1"
-                                    />
-                                    <span class="slds-resizable__handle">
-                                        <span
-                                            class="slds-resizable__divider"
-                                        ></span>
-                                    </span>
-                                </div>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <template lwc:if={nowShowingNodes}>
-                            <template
-                                for:each={nowShowingNodes}
-                                for:item="node"
-                            >
-                                <tr
-                                    aria-level={node.level}
-                                    aria-posinset={node.posinset}
-                                    aria-selected="false"
-                                    aria-expanded={node.isExpanded}
-                                    aria-setsize={node.maxsize}
-                                    class="slds-hint-parent"
-                                    key={node.id}
-                                >
+                    <div
+                        id="tableViewInnerDiv"
+                        onscroll={tableScrolled}
+                        class="slds-scrollable_y tableViewInnerDiv"
+                    >
+                        <table
+                            class="slds-table slds-table_bordered slds-table_header-fixed slds-table_resizable-cols slds-table_fixed-layout slds-tree slds-table_tree"
+                            role="treegrid"
+                        >
+                            <thead>
+                                <tr>
                                     <th
-                                        class="slds-tree__item"
-                                        data-label="Name"
-                                        scope="row"
+                                        class="slds-is-resizable dv-dynamic-width col-name"
+                                        scope="col"
+                                        title="Name"
+                                        data-colname="name"
                                     >
-                                        <template lwc:if={node.hasChild}>
-                                            <button
-                                                class="slds-button slds-button_icon slds-button_icon-x-small slds-m-right_x-small"
-                                                data-nodeid={node.id}
-                                                data-nodelevel={node.level}
-                                                onclick={handleNodeToggle}
+                                        <div class="slds-cell-fixed col-name">
+                                            <a
+                                                class="slds-th__action slds-text-link--reset"
                                             >
-                                                <svg
-                                                    class="slds-button__icon slds-button__icon_small"
+                                                <span class="slds-truncate"
+                                                    >Name</span
                                                 >
-                                                    <use
-                                                        xlink:href="/public/assets/icons/utility-sprite/svg/symbols.svg#chevronright"
-                                                    ></use>
-                                                </svg>
-                                            </button>
-                                        </template>
-                                        <div
-                                            class="slds-truncate"
-                                            title={node.name}
-                                        >
-                                            {node.name}
+                                            </a>
+                                            <div class="slds-resizable">
+                                                <span
+                                                    class="slds-resizable__handle"
+                                                    onmousedown={handlemousedown}
+                                                >
+                                                    <span
+                                                        class="slds-resizable__divider"
+                                                    ></span>
+                                                </span>
+                                            </div>
                                         </div>
                                     </th>
-                                    <td data-label="Type" role="gridcell">
-                                        <div
-                                            class="slds-truncate"
-                                            title={node.type}
-                                        >
-                                            {node.type}
-                                        </div>
-                                    </td>
-                                    <td
-                                        data-label="Line Duration"
-                                        role="gridcell"
+                                    <th
+                                        class="slds-is-resizable dv-dynamic-width col-type"
+                                        scope="col"
+                                        title="Type"
+                                        data-colname="type"
                                     >
-                                        <div
-                                            class="slds-truncate"
-                                            title={node.unitLength}
-                                        >
-                                            {node.unitDuration}&ensp;
-                                            <span class="line-length">
-                                                [{node.unitLength} Lines]</span
+                                        <div class="slds-cell-fixed col-type">
+                                            <a
+                                                class="slds-th__action slds-text-link--reset"
                                             >
+                                                <span class="slds-truncate"
+                                                    >Type</span
+                                                >
+                                            </a>
+                                            <div class="slds-resizable">
+                                                <span
+                                                    class="slds-resizable__handle"
+                                                    onmousedown={handlemousedown}
+                                                >
+                                                    <span
+                                                        class="slds-resizable__divider"
+                                                    ></span>
+                                                </span>
+                                            </div>
                                         </div>
-                                    </td>
-                                    <td
-                                        data-label="Total Time (ms)"
-                                        role="gridcell"
+                                    </th>
+                                    <th
+                                        class="slds-is-resizable dv-dynamic-width col-lineDuration"
+                                        scope="col"
+                                        title="Line Duration"
+                                        data-colname="lineDuration"
                                     >
                                         <div
-                                            class="slds-truncate"
-                                            title={node.soqlCount}
+                                            class="slds-cell-fixed col-lineDuration"
                                         >
-                                            {node.soqlCount}
+                                            <a
+                                                class="slds-th__action slds-text-link--reset"
+                                            >
+                                                <span class="slds-truncate"
+                                                    >Line Duration</span
+                                                >
+                                            </a>
+                                            <div class="slds-resizable">
+                                                <span
+                                                    class="slds-resizable__handle"
+                                                    onmousedown={handlemousedown}
+                                                >
+                                                    <span
+                                                        class="slds-resizable__divider"
+                                                    ></span>
+                                                </span>
+                                            </div>
                                         </div>
-                                    </td>
-                                    <td
-                                        data-label="Total Time (ms)"
-                                        role="gridcell"
+                                    </th>
+                                    <th
+                                        class="slds-is-resizable dv-dynamic-width col-SOQLcount"
+                                        scope="col"
+                                        title="SOQL Count"
+                                        data-colname="SOQLcount"
                                     >
                                         <div
-                                            class="slds-truncate"
-                                            title={node.dmlCount}
+                                            class="slds-cell-fixed col-SOQLcount"
                                         >
-                                            {node.dmlCount}
+                                            <a
+                                                class="slds-th__action slds-text-link--reset"
+                                            >
+                                                <span class="slds-truncate"
+                                                    >SOQL Count</span
+                                                >
+                                            </a>
+                                            <div class="slds-resizable">
+                                                <span
+                                                    class="slds-resizable__handle"
+                                                    onmousedown={handlemousedown}
+                                                >
+                                                    <span
+                                                        class="slds-resizable__divider"
+                                                    ></span>
+                                                </span>
+                                            </div>
                                         </div>
-                                    </td>
-                                    <td
-                                        data-label="Total Time (ms)"
-                                        role="gridcell"
+                                    </th>
+                                    <th
+                                        class="slds-is-resizable dv-dynamic-width col-DMLcount"
+                                        scope="col"
+                                        title="DML Count"
+                                        data-colname="DMLcount"
                                     >
                                         <div
-                                            class="slds-truncate"
-                                            title={node.timeInMS}
+                                            class="slds-cell-fixed col-DMLcount"
                                         >
-                                            {node.timeInMS} ms
+                                            <a
+                                                class="slds-th__action slds-text-link--reset"
+                                            >
+                                                <span class="slds-truncate"
+                                                    >DML Count</span
+                                                >
+                                            </a>
+                                            <div class="slds-resizable">
+                                                <span
+                                                    class="slds-resizable__handle"
+                                                    onmousedown={handlemousedown}
+                                                >
+                                                    <span
+                                                        class="slds-resizable__divider"
+                                                    ></span>
+                                                </span>
+                                            </div>
                                         </div>
-                                    </td>
-                                </tr></template
-                            ></template
-                        >
-                    </tbody>
-                </table>
+                                    </th>
+                                    <th
+                                        class="slds-is-resizable dv-dynamic-width col-CPUtime"
+                                        scope="col"
+                                        title="Total Time (ms)"
+                                        data-colname="CPUtime"
+                                    >
+                                        <div
+                                            class="slds-cell-fixed col-CPUtime"
+                                        >
+                                            <a
+                                                class="slds-th__action slds-text-link--reset"
+                                            >
+                                                <span class="slds-truncate"
+                                                    >Total Time (ms)</span
+                                                >
+                                            </a>
+                                            <div class="slds-resizable">
+                                                <span
+                                                    class="slds-resizable__handle"
+                                                    onmousedown={handlemousedown}
+                                                >
+                                                    <span
+                                                        class="slds-resizable__divider"
+                                                    ></span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th scope="col">
+                                        <div class="slds-cell-fixed"></div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template lwc:if={nowShowingNodes}>
+                                    <template
+                                        for:each={nowShowingNodes}
+                                        for:item="node"
+                                    >
+                                        <tr
+                                            aria-level={node.level}
+                                            aria-posinset={node.posinset}
+                                            aria-selected="false"
+                                            aria-expanded={node.isExpanded}
+                                            aria-setsize={node.maxsize}
+                                            class="slds-hint-parent"
+                                            key={node.id}
+                                        >
+                                            <td
+                                                class="slds-tree__item"
+                                                data-label="Name"
+                                                scope="row"
+                                            >
+                                                <template
+                                                    lwc:if={node.hasChild}
+                                                >
+                                                    <button
+                                                        class="slds-button slds-button_icon slds-button_icon-x-small slds-m-right_x-small"
+                                                        data-nodeid={node.id}
+                                                        data-nodelevel={node.level}
+                                                        onclick={handleNodeToggle}
+                                                    >
+                                                        <svg
+                                                            class="slds-button__icon slds-button__icon_small"
+                                                        >
+                                                            <use
+                                                                xlink:href="/public/assets/icons/utility-sprite/svg/symbols.svg#chevronright"
+                                                            ></use>
+                                                        </svg>
+                                                    </button>
+                                                </template>
+                                                <div
+                                                    class="slds-truncate"
+                                                    title={node.name}
+                                                >
+                                                    {node.name}
+                                                </div>
+                                            </td>
+                                            <td
+                                                data-label="Type"
+                                                role="gridcell"
+                                            >
+                                                <div
+                                                    class="slds-truncate"
+                                                    title={node.type}
+                                                >
+                                                    {node.type}
+                                                </div>
+                                            </td>
+                                            <td
+                                                data-label="Line Duration"
+                                                role="gridcell"
+                                            >
+                                                <div
+                                                    class="slds-truncate"
+                                                    title={node.unitLength}
+                                                >
+                                                    {node.unitDuration}&ensp;
+                                                    <span class="line-length">
+                                                        [{node.unitLength}
+                                                        Lines]</span
+                                                    >
+                                                </div>
+                                            </td>
+                                            <td
+                                                data-label="Total Time (ms)"
+                                                role="gridcell"
+                                            >
+                                                <div
+                                                    class="slds-truncate"
+                                                    title={node.soqlCount}
+                                                >
+                                                    {node.soqlCount}
+                                                </div>
+                                            </td>
+                                            <td
+                                                data-label="Total Time (ms)"
+                                                role="gridcell"
+                                            >
+                                                <div
+                                                    class="slds-truncate"
+                                                    title={node.dmlCount}
+                                                >
+                                                    {node.dmlCount}
+                                                </div>
+                                            </td>
+                                            <td
+                                                data-label="Total Time (ms)"
+                                                role="gridcell"
+                                            >
+                                                <div
+                                                    class="slds-truncate"
+                                                    title={node.timeInMS}
+                                                >
+                                                    {node.timeInMS} ms
+                                                </div>
+                                            </td>
+                                            <td></td></tr></template
+                                ></template>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </template>

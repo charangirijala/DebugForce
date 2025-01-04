@@ -220,6 +220,9 @@ export default class LogFileProcessor extends LightningElement {
         //publish fileData to MessageChannel
         this.publishFileMetadata();
         // parseResultToTree(this.result);
+
+        //navigate to log viewer
+        publish('appChannel', { activeApp: 'Log Viewer' });
         console.log('Total stdExps: ', this.stdExpCount);
         console.log('Total exeAnonys: ', this.execAnonyCount);
         console.log('Total CodeUnits Count: ', this.codeUnitsCount);
