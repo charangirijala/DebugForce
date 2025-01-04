@@ -20,6 +20,11 @@ export default class PasteLog extends LightningElement {
             const logData = this.logText.split(/\r\n|\n/);
             console.log('paste data length: ', logData.length);
             publish('logtext', logData);
+
+            this.logText = '';
+            this.template.querySelector('textarea').value = '';
+        } else if (this.logText === '') {
+            publish('logtext', []);
         }
     }
 }

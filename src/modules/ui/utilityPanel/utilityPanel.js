@@ -7,6 +7,13 @@ export default class UtilityPanel extends LightningElement {
     isLoaded = false;
     appChannelSub = null;
     activeApp = 'Log Viewer';
+    isWidthChanged = false;
+    nameWidth;
+    typeWidth;
+    lineDurationWidth;
+    SOQLcountWidth;
+    DMLcountWidth;
+    CPUtimeWidth;
     get isLogViewer() {
         return this.activeApp === 'Log Viewer';
     }
@@ -15,7 +22,6 @@ export default class UtilityPanel extends LightningElement {
         if (!this.appChannelSub) {
             this.appChannelSub = subscribe('appChannel', (data) => {
                 this.activeApp = data.activeApp;
-                // console.log('activeApp: ', this.activeApp);
             });
         }
     }
@@ -30,6 +36,7 @@ export default class UtilityPanel extends LightningElement {
                 return node.level === 1;
             });
         }
+        this.setColWidths();
         console.log('renderedCallback from utilitypanel');
     }
     nodesMaster = [];
@@ -59,6 +66,7 @@ export default class UtilityPanel extends LightningElement {
             this.collapseNode(nodeId, nodeMap);
             // Convert map back to array
             this.nowShowingNodes = Array.from(nodeMap.values());
+            console.log('nowShowingNodes', this.nowShowingNodes);
         }
     }
 
@@ -98,7 +106,216 @@ export default class UtilityPanel extends LightningElement {
         this.dispatchEvent(new CustomEvent('closepanel'));
     }
 
-    handleResize(event) {
-        console.log('resize', event.target);
+    //FOR HANDLING THE HORIZONTAL SCROLL OF TABLE MANUALLY
+    tableOuterDivScrolled(event) {
+        this._tableViewInnerDiv =
+            this.template.querySelector('.tableViewInnerDiv');
+        if (this._tableViewInnerDiv) {
+            if (
+                !this._tableViewInnerDivOffsetWidth ||
+                this._tableViewInnerDivOffsetWidth === 0
+            ) {
+                this._tableViewInnerDivOffsetWidth =
+                    this._tableViewInnerDiv.offsetWidth;
+            }
+            this._tableViewInnerDiv.style =
+                'width:' +
+                (event.currentTarget.scrollLeft +
+                    this._tableViewInnerDivOffsetWidth) +
+                'px;' +
+                this.tableBodyStyle;
+        }
+        this.tableScrolled(event);
+    }
+
+    tableScrolled(event) {
+        if (this.enableInfiniteScrolling) {
+            if (
+                event.target.scrollTop + event.target.offsetHeight >=
+                event.target.scrollHeight
+            ) {
+                this.dispatchEvent(
+                    new CustomEvent('showmorerecords', {
+                        bubbles: true
+                    })
+                );
+            }
+        }
+        if (this.enableBatchLoading) {
+            if (
+                event.target.scrollTop + event.target.offsetHeight >=
+                event.target.scrollHeight
+            ) {
+                this.dispatchEvent(
+                    new CustomEvent('shownextbatch', {
+                        bubbles: true
+                    })
+                );
+            }
+        }
+    }
+
+    //#region ***************** RESIZABLE COLUMNS *************************************/
+    handlemouseup(e) {
+        this._tableThColumn = undefined;
+        this._tableThInnerDiv = undefined;
+        this._pageX = undefined;
+        this._tableThWidth = undefined;
+    }
+
+    handlemousedown(e) {
+        if (!this._initWidths) {
+            this._initWidths = [];
+            let tableThs = this.template.querySelectorAll(
+                'table thead .dv-dynamic-width'
+            );
+            tableThs.forEach((th) => {
+                this._initWidths.push(th.style.width);
+            });
+        }
+
+        this._tableThColumn = e.target.parentElement;
+        this._tableThInnerDiv = e.target.parentElement;
+        while (this._tableThColumn.tagName !== 'TH') {
+            this._tableThColumn = this._tableThColumn.parentNode;
+        }
+        while (!this._tableThInnerDiv.className.includes('slds-cell-fixed')) {
+            this._tableThInnerDiv = this._tableThInnerDiv.parentNode;
+        }
+        // console.log(
+        //     'handlemousedown this._tableThColumn.tagName => ',
+        //     this._tableThColumn.tagName
+        // );
+        this._pageX = e.pageX;
+
+        this._padding = this.paddingDiff(this._tableThColumn);
+
+        this._tableThWidth = this._tableThColumn.offsetWidth - this._padding;
+        // console.log(
+        //     'handlemousedown this._tableThColumn.tagName => ',
+        //     this._tableThColumn.tagName
+        // );
+    }
+
+    handlemousemove(e) {
+        // console.log('mousemove this._tableThColumn => ', this._tableThColumn);
+        if (this._tableThColumn && this._tableThColumn.tagName === 'TH') {
+            this._diffX = e.pageX - this._pageX;
+
+            this.template.querySelector('table').style.width =
+                this.template.querySelector('table') - this._diffX + 'px';
+            const newWidth = this._tableThWidth + this._diffX;
+            this._tableThColumn.style.width = newWidth + 'px';
+            this._tableThInnerDiv.style.width = this._tableThColumn.style.width;
+            const colname = this._tableThColumn.dataset.colname;
+            this.setColWidthsChange(colname, newWidth);
+            let tableThs = this.template.querySelectorAll(
+                'table thead .dv-dynamic-width'
+            );
+            let tableBodyRows =
+                this.template.querySelectorAll('table tbody tr');
+            let tableBodyTds = this.template.querySelectorAll(
+                'table tbody .dv-dynamic-width'
+            );
+            tableBodyRows.forEach((row) => {
+                let rowTds = row.querySelectorAll('.dv-dynamic-width');
+                rowTds.forEach((td, ind) => {
+                    rowTds[ind].style.width = tableThs[ind].style.width;
+                });
+            });
+        }
+    }
+
+    handledblclickresizable() {
+        let tableThs = this.template.querySelectorAll(
+            'table thead .dv-dynamic-width'
+        );
+        let tableBodyRows = this.template.querySelectorAll('table tbody tr');
+        tableThs.forEach((th, ind) => {
+            th.style.width = this._initWidths[ind];
+            th.querySelector('.slds-cell-fixed').style.width =
+                this._initWidths[ind];
+        });
+        tableBodyRows.forEach((row) => {
+            let rowTds = row.querySelectorAll('.dv-dynamic-width');
+            rowTds.forEach((td, ind) => {
+                rowTds[ind].style.width = this._initWidths[ind];
+            });
+        });
+    }
+
+    paddingDiff(col) {
+        if (this.getStyleVal(col, 'box-sizing') === 'border-box') {
+            return 0;
+        }
+
+        this._padLeft = this.getStyleVal(col, 'padding-left');
+        this._padRight = this.getStyleVal(col, 'padding-right');
+        return parseInt(this._padLeft, 10) + parseInt(this._padRight, 10);
+    }
+
+    getStyleVal(elm, css) {
+        return window.getComputedStyle(elm, null).getPropertyValue(css);
+    }
+
+    setColWidths() {
+        const panelWidth = this.template
+            .querySelector('.utility-panel')
+            .getBoundingClientRect().width;
+        const namecol = this.template.querySelectorAll('.col-name');
+        const typecol = this.template.querySelectorAll('.col-type');
+        const lineDurationcol =
+            this.template.querySelectorAll('.col-lineDuration');
+        const SOQLcountcol = this.template.querySelectorAll('.col-SOQLcount');
+        const DMLcountcol = this.template.querySelectorAll('.col-DMLcount');
+        const CPUtimecol = this.template.querySelectorAll('.col-CPUtime');
+
+        if (this.isWidthChanged === false) {
+            this.nameWidth = panelWidth * 0.48;
+            this.typeWidth = panelWidth * 0.1;
+            this.lineDurationWidth = panelWidth * 0.1;
+            this.SOQLcountWidth = panelWidth * 0.1;
+            this.DMLcountWidth = panelWidth * 0.1;
+            this.CPUtimeWidth = panelWidth * 0.1;
+            this.isWidthChanged = true;
+        }
+
+        namecol.forEach((col) => {
+            col.style.width = this.nameWidth + 'px';
+        });
+
+        typecol.forEach((col) => {
+            col.style.width = this.typeWidth + 'px';
+        });
+
+        lineDurationcol.forEach((col) => {
+            col.style.width = this.lineDurationWidth + 'px';
+        });
+
+        SOQLcountcol.forEach((col) => {
+            col.style.width = this.SOQLcountWidth + 'px';
+        });
+        DMLcountcol.forEach((col) => {
+            col.style.width = this.DMLcountWidth + 'px';
+        });
+        CPUtimecol.forEach((col) => {
+            col.style.width = this.CPUtimeWidth + 'px';
+        });
+    }
+
+    setColWidthsChange(colname, width) {
+        if (colname === 'name') {
+            this.nameWidth = width;
+        } else if (colname === 'type') {
+            this.typeWidth = width;
+        } else if (colname === 'lineDuration') {
+            this.lineDurationWidth = width;
+        } else if (colname === 'SOQLcount') {
+            this.SOQLcountWidth = width;
+        } else if (colname === 'DMLcount') {
+            this.DMLcountWidth = width;
+        } else if (colname === 'CPUtime') {
+            this.CPUtimeWidth = width;
+        }
     }
 }
