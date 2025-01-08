@@ -16,7 +16,11 @@ export default class PasteLog extends LightningElement {
     }
 
     analyzeLog() {
-        if (this.logText !== null && this.logText !== '') {
+        if (
+            this.logText !== null &&
+            this.logText !== '' &&
+            this.logText !== undefined
+        ) {
             const logData = this.logText.split(/\r\n|\n/);
             console.log('paste data length: ', logData.length);
             publish('logtext', logData);

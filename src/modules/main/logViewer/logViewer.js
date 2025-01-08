@@ -1,12 +1,14 @@
 /* eslint-disable inclusive-language/use-inclusive-words */
 import { LightningElement, track } from 'lwc';
-import { subscribe } from 'services/pubsub';
+import { publish, subscribe } from 'services/pubsub';
 
 export default class logViewer extends LightningElement {
     errorCenterX = 0;
     errors = [];
     errorPopoverOpen = false;
+    filterChannelSub = null;
     goToPlaceholder = 'Go to line';
+    filterHasLabel = true;
     goTohasLabel = false;
     reRenderVal = false;
     result = [];
@@ -15,93 +17,22 @@ export default class logViewer extends LightningElement {
     callStackToggle = false;
     LineNumMap = new Map();
     LineNumFocus = null;
-    fieldValue;
-    operatorValue;
-    filterValue = '';
-    filterPickListValue = [];
     filterPickListMaster = [];
     logChannelSub = null;
     isFilterEditing = false;
     isFilterPopOverShowing = false;
     currentEditFilterIdx;
     popoverTop = 0;
-    fieldOptions = [
-        {
-            label: 'Line',
-            value: 'Line',
-            type: 'text',
-            selected: false
-        },
-        {
-            label: 'Event',
-            value: 'Event',
-            type: 'picklist',
-            selected: false
-        }
-    ];
 
-    operatorOptions = [
-        [
-            { label: 'Equals', value: 'Equals' },
-            { label: 'Not Equals', value: 'Not Equals' }
-        ]
-    ];
-    /* 
-      { label: "Equals", value: "Equals" },
-      { label: "Not Equals", value: "Not Equals" },
-      { label: "Greater Than", value: "Greater Than" },
-      { label: "Greater Than or Equal", value: "Greater Than or Equal" },
-      { label: "Less Than", value: "Less Than" },
-      { label: "Less Than or Equal", value: "Less Than or Equal" },
-      { label: "Contains", value: "Contains" }
-     */
-
-    get isFilterValuePicklist() {
-        return (
-            this.fieldValue === 'Event' && this.filterPickListMaster.length > 0
-        );
+    get popoverClass() {
+        return this.isFilterPopOverShowing ? '' : 'slds-hide';
     }
-    get filterValueOptions() {
-        let options = this.filterPickListMaster;
-        let opts = options.map((item) => ({
-            ...item,
-            selected: this.filterPickListValue.includes(item.value)
-        }));
-        console.log('Options generated: ', opts);
-        return opts;
+    get filterIconStyle() {
+        return this.activeFilters.length === 0
+            ? 'action-bar-action-toggleFilter reportAction report-action-toggleFilter filtersButton slds-button slds-button_icon-border'
+            : 'action-bar-action-toggleFilter reportAction report-action-toggleFilter icon-active-filters filtersButton slds-button slds-button_icon-border';
     }
-
-    @track activeFilters = [
-        {
-            id: 0,
-            field: 'Line',
-            operator: 'Equals',
-            value: '2019-12-18T22:00:00.000Z',
-            isPicklist: false,
-            filterValues: [],
-            isEdited: false,
-            isActive: true,
-            filterItemClass:
-                'slds-filters__item slds-grid slds-grid_vertical-align-center'
-        },
-        {
-            id: 1,
-            field: 'Event',
-            operator: 'Equals',
-            isPicklist: true,
-            value: '',
-            filterValues: [
-                'HEAP_ALLOCATE',
-                'CODE_UNIT_STARTED',
-                'CODE_UNIT_FINISHED'
-            ],
-            isEdited: false,
-            isActive: true,
-            filterItemClass:
-                'slds-filters__item slds-grid slds-grid_vertical-align-center'
-        }
-    ];
-    dynamicHeight;
+    @track activeFilters = [];
     filterClass =
         'slds-panel slds-size_medium slds-panel_docked slds-panel_docked-right slds-panel_drawer filter-panel slds-hidden';
     pageNumberClass = 'slds-input';
@@ -124,7 +55,7 @@ export default class logViewer extends LightningElement {
 
     connectedCallback() {
         if (!this.logChannelSub) {
-            subscribe('logChannel', (data) => {
+            this.logChannelSub = subscribe('logChannel', (data) => {
                 if (data) {
                     if (data.fileData) {
                         this.fileData = data.fileData;
@@ -150,18 +81,39 @@ export default class logViewer extends LightningElement {
                                     value: str,
                                     label: str
                                 }));
+                            const payload = {
+                                currentFilterIdx: null,
+                                activeFilters: this.activeFilters,
+                                isFieldPopOpen: false,
+                                isOperatorPopOpen: false,
+                                isValPopOpen: false,
+                                eventsPicklistValues: this.filterPickListMaster
+                            };
+                            // console.log('payload picklistVals: ', payload);
+                            publish('filterChannel', payload);
                         }
                     }
                 }
             });
         }
+
+        if (!this.filterChannelSub) {
+            this.filterChannelSub = subscribe('filterChannel', (data) => {
+                if (data.activeFilters) {
+                    this.activeFilters = this.activeFilters;
+                }
+            });
+        }
+        this._boundCloseFilterPopoverOnClick =
+            this.closeFilterPopoverOnClick.bind(this);
+        window.addEventListener('click', this._boundCloseFilterPopoverOnClick);
     }
 
-    get ShowFilterSave() {
-        return this.isFilterEditing === true &&
-            this.isFilterPopOverShowing === false
-            ? true
-            : false;
+    disconnectedCallback() {
+        window.removeEventListener(
+            'click',
+            this._boundCloseFilterPopoverOnClick
+        );
     }
 
     get errCount() {
@@ -169,14 +121,7 @@ export default class logViewer extends LightningElement {
     }
 
     renderedCallback() {
-        const popover = this.template.querySelector('section');
-
-        if (popover) {
-            const popoverHeight = popover.getBoundingClientRect().height / 2;
-            console.log('PopoverTOp: ', this.popoverTop);
-            const height = this.popoverTop - popoverHeight;
-            popover.style.top = `${height}px `;
-        }
+        this.setFilterPopoverStyle();
         if (this.isSearching) {
             const searchButton = this.template.querySelector('.search-button');
             if (searchButton) {
@@ -246,7 +191,6 @@ export default class logViewer extends LightningElement {
             );
         }
     }
-
     onPageNumberChange(event) {
         // console.log("Page Change: ", event.target.value);
         let input = parseInt(event.target.value, 10);
@@ -256,6 +200,7 @@ export default class logViewer extends LightningElement {
             this.calculations();
         }
     }
+
     nextHandler() {
         if (this.pageNumber + 1 <= this.noOfPages) {
             this.pageNumber++;
@@ -269,6 +214,8 @@ export default class logViewer extends LightningElement {
         }
     }
 
+    // ################# FILTERS START#########################################################
+
     closeFilter() {
         this.filterClass =
             'slds-panel slds-size_medium slds-panel_docked slds-panel_docked-right slds-panel_drawer filter-panel slds-hidden';
@@ -276,6 +223,13 @@ export default class logViewer extends LightningElement {
     openFilter() {
         this.filterClass =
             'slds-panel slds-size_medium slds-panel_docked slds-panel_docked-right slds-panel_drawer filter-panel slds-is-open';
+    }
+
+    get ShowFilterSave() {
+        return (
+            this.isFilterEditing &&
+            this.activeFilters.some((filter) => filter.isEdited === true)
+        );
     }
 
     removeFilter(event) {
@@ -297,12 +251,13 @@ export default class logViewer extends LightningElement {
         // if (!this.isFilterEditing) {
         this.isFilterEditing = true;
         this.isFilterPopOverShowing = true;
-        this.filterPickListValue = [];
+        // this.filterPickListValue = [];
         this.currentEditFilterIdx = this.activeFilters.length;
         const newFilter = {
             id: this.activeFilters.length,
             field: 'New Filter',
             operator: '',
+            operatorLabel: '',
             value: '',
             isPicklist: false,
             filterValues: [],
@@ -313,6 +268,16 @@ export default class logViewer extends LightningElement {
         };
         this.activeFilters.push(newFilter);
         // }
+        const payload = {
+            currentFilterIdx: newFilter.id,
+            activeFilters: this.activeFilters,
+            isFieldPopOpen: false,
+            isOperatorPopOpen: false,
+            isValPopOpen: false,
+            eventsPicklistValues: this.filterPickListMaster
+        };
+
+        publish('filterChannel', payload);
     }
 
     removeAllFilters() {
@@ -330,184 +295,197 @@ export default class logViewer extends LightningElement {
     saveFilterEdit() {
         this.isFilterEditing = false;
         this.handlePopoverClose();
-        let idxToRemove = [];
+
         for (let i = 0; i < this.activeFilters.length; i++) {
             let filter = this.activeFilters[i];
+            filter.isEdited = false;
+            filter.filterItemClass =
+                'slds-filters__item slds-grid slds-grid_vertical-align-center';
             if (
-                filter.field === 'Line' &&
+                filter.field === 'line' &&
                 filter.operator !== '' &&
                 filter.value !== ''
             ) {
                 filter.isActive = true;
-                filter.filterItemClass =
-                    'slds-filters__item slds-grid slds-grid_vertical-align-center';
             } else if (
-                filter.field === 'Event' &&
+                filter.field === 'event' &&
                 filter.operator !== '' &&
                 filter.filterValues.length > 0
             ) {
                 filter.isActive = true;
-                filter.filterItemClass =
-                    'slds-filters__item slds-grid slds-grid_vertical-align-center';
             } else {
-                //Addition pop all filters where isactive=false
-                idxToRemove.push(i);
+                filter.isActive = false;
             }
         }
 
-        idxToRemove.forEach((idx) => {
-            this.activeFilters.splice(idx, 1);
+        this.activeFilters = this.activeFilters.filter((item) => {
+            return item.isActive === true;
         });
+
+        this.activeFilters.forEach((item, idx) => {
+            item.id = idx;
+        });
+
+        console.log('filters after save:', typeof this.activeFilters);
+    }
+
+    closeFilterPopoverOnClick(event) {
+        const clickedX = event.clientX;
+        const clickedY = event.clientY;
+        let isInBoundary = false;
+        let isInFilterBoundary = false;
+        // console.log(
+        //     'clicked on window x:',
+        //     event.clientX,
+        //     'y: ',
+        //     event.clientY
+        // );
+        const popover = this.template.querySelector('.slds-popover');
+        const filterPanel = this.template.querySelector('.filter-panel');
+
+        // console.log(popover);
+        if (popover && filterPanel) {
+            // console.log('pop boundaries: ', popover.getBoundingClientRect());
+
+            const boundaries = popover.getBoundingClientRect();
+            const filterBoundaries = filterPanel.getBoundingClientRect();
+            const filXLeft = filterBoundaries.left;
+            const filXRight = filterBoundaries.right;
+            const filYTop = filterBoundaries.top;
+            const filYBottom = filterBoundaries.bottom;
+            const xLeft = boundaries.left;
+            const xRight = boundaries.right;
+            const yTop = boundaries.top;
+            const yBottom = boundaries.bottom;
+
+            if (xLeft !== 0 && xRight !== 0 && yTop !== 0 && yBottom !== 0) {
+                const childComp = this.template.querySelector(
+                    'ui-fil-value-input-combobox'
+                );
+                const eventDropdown =
+                    childComp.shadowRoot.querySelector('.event-dropdown');
+
+                isInBoundary =
+                    clickedX > xLeft &&
+                    clickedX < xRight &&
+                    clickedY > yTop &&
+                    clickedY < yBottom
+                        ? true
+                        : false;
+                isInFilterBoundary =
+                    clickedX > filXLeft &&
+                    clickedX < filXRight &&
+                    clickedY > filYTop &&
+                    clickedY < filYBottom
+                        ? true
+                        : false;
+                // console.log('clicked in boundary: ', isInBoundary);
+                if (eventDropdown) {
+                    console.log(
+                        'Dropdown activated: ',
+                        eventDropdown.getBoundingClientRect()
+                    );
+                    const dropdownBoundaries =
+                        eventDropdown.getBoundingClientRect();
+                    const dropXLeft = dropdownBoundaries.left;
+                    const dropXRight = dropdownBoundaries.right;
+                    const dropYTop = dropdownBoundaries.top;
+                    const dropYBottom = dropdownBoundaries.bottom;
+                    if (
+                        dropXLeft !== 0 &&
+                        dropXRight !== 0 &&
+                        dropYTop !== 0 &&
+                        dropYBottom !== 0
+                    ) {
+                        isInFilterBoundary =
+                            clickedX > dropXLeft &&
+                            clickedX < dropXRight &&
+                            clickedY > dropYTop &&
+                            clickedY < dropYBottom
+                                ? true
+                                : false;
+                    }
+                }
+                if (isInBoundary === false && isInFilterBoundary === false) {
+                    if (this.isFilterPopOverShowing) {
+                        this.isFilterPopOverShowing = false;
+                    }
+                }
+            }
+        }
     }
 
     onFilterElementClick(event) {
+        this.currentEditFilterIdx = event.currentTarget.dataset.filterid;
+
+        const payload = {
+            currentFilterIdx: this.currentEditFilterIdx,
+            activeFilters: this.activeFilters,
+            isFieldPopOpen: false,
+            isOperatorPopOpen: false,
+            isValPopOpen: false,
+            eventsPicklistValues: this.filterPickListMaster
+        };
+        publish('filterChannel', payload);
+        if (this.isFilterEditing === true) {
+            this.setFilterPopoverStyle();
+        }
         this.isFilterEditing = true;
         this.isFilterPopOverShowing = true;
-        this.currentEditFilterIdx = event.currentTarget.dataset.id;
-        this.calculateFieldOptions();
-        this.calculateOperatorOptions();
-        this.fieldValue = this.activeFilters[this.currentEditFilterIdx].field;
-
-        if (
-            Array.isArray(this.activeFilters[this.currentEditFilterIdx].value)
-        ) {
-            //this is for picklist
-            this.filterValue = '';
-            this.filterPickListValue =
-                this.activeFilters[this.currentEditFilterIdx].filterValues;
-        } else {
-            // this.reRenderVal = !this.reRenderVal;
-            console.log(
-                'reRenderVal; ',
-                this.activeFilters[this.currentEditFilterIdx].value,
-                'rerender item:',
-                this.activeFilters[this.currentEditFilterIdx]
-            );
-            this.filterValue =
-                this.activeFilters[this.currentEditFilterIdx].value;
-        }
-        console.log('Filter ID;' + event.currentTarget.dataset.id);
-        this.activeFilters[this.currentEditFilterIdx].filterItemClass =
-            'slds-filters__item slds-grid slds-grid_vertical-align-center filter-being-edited';
-        const filterPanel = this.template.querySelector('.filter-panel');
-        const coord = filterPanel.getBoundingClientRect();
-        console.log('X; ' + coord.x + ' Y:', coord.y + 'Width: ', coord.width);
-        console.log(typeof event.clientY);
-        console.log(typeof coord.Y);
-        this.popoverTop = event.clientY - coord.y;
-        console.log('popover cal; ', this.popoverTop);
-    }
-
-    handleFieldChange(event) {
-        const fieldVal = event.detail;
-        console.log('fieldValue: ', event.detail);
-        if (fieldVal && Array.isArray(fieldVal) && fieldVal.length !== 0) {
-            console.log('Field Selected ', fieldVal[0].value);
-            this.fieldValue = this.activeFilters[
-                this.currentEditFilterIdx
-            ].field = fieldVal[0].value;
-            this.activeFilters[this.currentEditFilterIdx].isPicklist =
-                this.fieldValue === 'Event' ? true : false;
-        }
-    }
-
-    handleOperatorChange(event) {
-        const opVal = event.detail;
-        if (opVal && Array.isArray(opVal) && opVal.length !== 0) {
-            console.log('Operator Selected ', opVal[0].value);
-            this.operatorValue = this.activeFilters[
-                this.currentEditFilterIdx
-            ].operator = opVal[0].value;
-        }
-    }
-
-    handleFilterValueChange(event) {
-        // this.filterValue = event.detail;
-        if (this.currentEditFilterIdx < this.activeFilters.length) {
-            this.activeFilters[this.currentEditFilterIdx].filterValues =
-                event.detail.map((filter) => {
-                    return filter.value;
-                });
-        }
-        this.filterPickListValue = [];
-        console.log('Selected items: ', this.filterPickListValue);
+        // console.log('Filter ID;' + event.currentTarget.dataset.id);
+        // this.activeFilters[this.currentEditFilterIdx].filterItemClass =
+        //     'slds-filters__item slds-grid slds-grid_vertical-align-center filter-being-edited';
     }
 
     handlePopoverClose() {
         this.isFilterPopOverShowing = false;
-        this.fieldValue = null;
-        this.operatorValue = null;
-        this.filterValue = '';
-        this.filterPickListValue = [];
     }
 
-    handleFilterTextChange(event) {
-        console.log('Filter Text Changed ', event.detail);
-        this.filterValue = this.activeFilters[this.currentEditFilterIdx].value =
-            event.detail.textValue;
+    setFilterPopoverStyle() {
+        // console.log('style popobver: ', this.isFilterPopOverShowing);
+        if (this.isFilterPopOverShowing) {
+            const popover = this.template.querySelector('.popover-section');
+            const filterPanel = this.template.querySelector('.filter-panel');
+            const filterPanelTop = filterPanel.getBoundingClientRect().top;
+            console.log(
+                'panel boundaries: ',
+                filterPanel.getBoundingClientRect()
+            );
+            if (
+                this.currentEditFilterIdx !== null &&
+                this.currentEditFilterIdx !== undefined
+            ) {
+                const filter = this.template.querySelector(
+                    `[data-filterid="${this.currentEditFilterIdx}"]`
+                );
+                const popoverCenter =
+                    popover.getBoundingClientRect().height / 2;
+                // console.log('popovercenter: ', popoverCenter);
+
+                if (filter) {
+                    const filterBoundaries = filter.getBoundingClientRect();
+                    const filterCenter = filterBoundaries.height / 2;
+                    // console.log('filter boundaries: ', filterBoundaries);
+                    // console.log('Filter center: ', filterCenter);
+                    const top =
+                        filterBoundaries.top +
+                        filterCenter -
+                        filterPanelTop -
+                        popoverCenter;
+                    // console.log('top>', top);
+                    popover.style.top = `${top}px`;
+                }
+            }
+        }
     }
+
+    //################# FILTERS END ############################################################
 
     handleCallStackChange() {
         this.callStackToggle = !this.callStackToggle;
     }
     closeCallStack() {
         this.callStackToggle = false;
-    }
-
-    calculateFieldOptions() {
-        this.fieldValue = this.activeFilters[this.currentEditFilterIdx].field;
-        this.fieldOptions = [
-            {
-                label: 'Line',
-                value: 'Line',
-                type: 'text',
-                selected: this.fieldValue === 'Line'
-            },
-            {
-                label: 'Event',
-                value: 'Event',
-                type: 'picklist',
-                selected: this.fieldValue === 'Event'
-            }
-        ];
-    }
-
-    calculateOperatorOptions() {
-        this.operatorValue =
-            this.activeFilters[this.currentEditFilterIdx].operator;
-
-        if (this.fieldValue === 'Line') {
-            this.operatorOptions = [
-                {
-                    label: 'Equals',
-                    value: 'Equals',
-                    selected: this.operatorValue === 'Equals'
-                },
-                {
-                    label: 'Not Equals',
-                    value: 'Not Equals',
-                    selected: this.operatorValue === 'Not Equals'
-                },
-                {
-                    label: 'Contains',
-                    value: 'Contains',
-                    selected: this.operatorValue === 'Contains'
-                }
-            ];
-        } else {
-            this.operatorOptions = [
-                {
-                    label: 'Equals',
-                    value: 'Equals',
-                    selected: this.operatorValue === 'Equals'
-                },
-                {
-                    label: 'Not Equals',
-                    value: 'Not Equals',
-                    selected: this.operatorValue === 'Not Equals'
-                }
-            ];
-        }
     }
 
     handleSearch() {
@@ -611,7 +589,6 @@ export default class logViewer extends LightningElement {
         return this.errors.length > 0;
     }
     goToErrLine(event) {
-        // console.log('line', event.detail);
         this.goToPage(event.detail);
     }
 }

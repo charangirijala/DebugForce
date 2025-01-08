@@ -259,48 +259,50 @@ export default class UtilityPanel extends LightningElement {
     }
 
     setColWidths() {
-        const panelWidth = this.template
-            .querySelector('.utility-panel')
-            .getBoundingClientRect().width;
-        const namecol = this.template.querySelectorAll('.col-name');
-        const typecol = this.template.querySelectorAll('.col-type');
-        const lineDurationcol =
-            this.template.querySelectorAll('.col-lineDuration');
-        const SOQLcountcol = this.template.querySelectorAll('.col-SOQLcount');
-        const DMLcountcol = this.template.querySelectorAll('.col-DMLcount');
-        const CPUtimecol = this.template.querySelectorAll('.col-CPUtime');
+        const utilitypanel = this.template.querySelector('.utility-panel');
+        if (utilitypanel) {
+            const panelWidth = utilitypanel.getBoundingClientRect().width;
+            const namecol = this.template.querySelectorAll('.col-name');
+            const typecol = this.template.querySelectorAll('.col-type');
+            const lineDurationcol =
+                this.template.querySelectorAll('.col-lineDuration');
+            const SOQLcountcol =
+                this.template.querySelectorAll('.col-SOQLcount');
+            const DMLcountcol = this.template.querySelectorAll('.col-DMLcount');
+            const CPUtimecol = this.template.querySelectorAll('.col-CPUtime');
 
-        if (this.isWidthChanged === false) {
-            this.nameWidth = panelWidth * 0.48;
-            this.typeWidth = panelWidth * 0.1;
-            this.lineDurationWidth = panelWidth * 0.1;
-            this.SOQLcountWidth = panelWidth * 0.1;
-            this.DMLcountWidth = panelWidth * 0.1;
-            this.CPUtimeWidth = panelWidth * 0.1;
-            this.isWidthChanged = true;
+            if (this.isWidthChanged === false) {
+                this.nameWidth = panelWidth * 0.48;
+                this.typeWidth = panelWidth * 0.1;
+                this.lineDurationWidth = panelWidth * 0.1;
+                this.SOQLcountWidth = panelWidth * 0.1;
+                this.DMLcountWidth = panelWidth * 0.1;
+                this.CPUtimeWidth = panelWidth * 0.1;
+                this.isWidthChanged = true;
+            }
+
+            namecol.forEach((col) => {
+                col.style.width = this.nameWidth + 'px';
+            });
+
+            typecol.forEach((col) => {
+                col.style.width = this.typeWidth + 'px';
+            });
+
+            lineDurationcol.forEach((col) => {
+                col.style.width = this.lineDurationWidth + 'px';
+            });
+
+            SOQLcountcol.forEach((col) => {
+                col.style.width = this.SOQLcountWidth + 'px';
+            });
+            DMLcountcol.forEach((col) => {
+                col.style.width = this.DMLcountWidth + 'px';
+            });
+            CPUtimecol.forEach((col) => {
+                col.style.width = this.CPUtimeWidth + 'px';
+            });
         }
-
-        namecol.forEach((col) => {
-            col.style.width = this.nameWidth + 'px';
-        });
-
-        typecol.forEach((col) => {
-            col.style.width = this.typeWidth + 'px';
-        });
-
-        lineDurationcol.forEach((col) => {
-            col.style.width = this.lineDurationWidth + 'px';
-        });
-
-        SOQLcountcol.forEach((col) => {
-            col.style.width = this.SOQLcountWidth + 'px';
-        });
-        DMLcountcol.forEach((col) => {
-            col.style.width = this.DMLcountWidth + 'px';
-        });
-        CPUtimecol.forEach((col) => {
-            col.style.width = this.CPUtimeWidth + 'px';
-        });
     }
 
     setColWidthsChange(colname, width) {
