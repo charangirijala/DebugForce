@@ -123,6 +123,7 @@ export default class LogFileProcessor extends LightningElement {
                 '[fileUploader.js] No.of Lines: ',
                 this.fileData.length
             );
+
             this.processLogData();
         };
         reader.onerror = (e) => {
@@ -132,105 +133,129 @@ export default class LogFileProcessor extends LightningElement {
     }
     processLogData() {
         this.resetVars();
-        let isSoql = false;
-        let isDml = false;
-        this.fileData.forEach((line, idx) => {
-            if (this.STD_EXP_MATCHER.test(line)) {
-                this.stdExpCount++;
-                const lineEvent = line.split('|')[1];
-                this.eventsPicklistValues.add(lineEvent);
-                /*
-                 * If the current line is only codeunit or Methodunit then
-                 * process regex else directly push the line to corresponding * CU / MU
-                 */
-                if (lineEvent === 'CODE_UNIT_STARTED') {
-                    const RegexMap = eventsRegexMain.get(lineEvent);
-                    for (let [key, value] of RegexMap) {
-                        if (key.test(line)) {
-                            this.createCodeUnit(line, value, idx + 1);
-                            break;
-                        }
-                    }
-                } else if (lineEvent === 'CODE_UNIT_FINISHED') {
-                    //process codeunit finish logic
-                    try {
-                        this.exitCodeUnit(idx + 1, line);
-                    } catch (err) {
-                        console.error(e);
-                    }
-                } else if (lineEvent === 'METHOD_ENTRY') {
-                    const RegexMap = eventsRegexMain.get(lineEvent);
-                    for (let [key, value] of RegexMap) {
-                        if (key.test(line)) {
-                            // console.log(value, "=>", key.test(line), "=>", line);
-                            this.createMethodUnit(line, value, idx + 1);
-                            break;
-                        }
-                    }
-                } else if (lineEvent === 'METHOD_EXIT') {
-                    //process methodunit finish logic
-                    try {
-                        this.exitMethodUnit(idx + 1, line);
-                    } catch (e) {
-                        console.error(e);
-                    }
-                } else {
-                    if (lineEvent === 'EXCEPTION_THROWN') {
-                        if (expThrownRegex.test(line)) {
-                            let errStr = line.split('|').pop().trim();
-                            this.createErrorObject(
-                                idx + 1,
-                                'EXCEPTION_THROWN',
-                                errStr
+        if (this.fileData.length > 0) {
+            let isSoql = false;
+            let isDml = false;
+            this.fileData.forEach((line, idx) => {
+                let isOrphan = true;
+                if (this.STD_EXP_MATCHER.test(line)) {
+                    this.stdExpCount++;
+                    const lineEvent = line.split('|')[1];
+                    // console.log('lineEvent: ', lineEvent, 'line: ', line);
+                    if (lineEvent !== undefined && lineEvent !== null) {
+                        isOrphan = false;
+                        this.eventsPicklistValues.add(lineEvent);
+                        /*
+                         * If the current line is only codeunit or Methodunit then
+                         * process regex else directly push the line to corresponding * CU / MU
+                         */
+                        if (lineEvent === 'CODE_UNIT_STARTED') {
+                            const RegexMap = eventsRegexMain.get(lineEvent);
+                            for (let [key, value] of RegexMap) {
+                                if (key.test(line)) {
+                                    this.createCodeUnit(line, value, idx + 1);
+                                    break;
+                                }
+                            }
+                        } else if (lineEvent === 'CODE_UNIT_FINISHED') {
+                            //process codeunit finish logic
+                            try {
+                                this.exitCodeUnit(idx + 1, line);
+                            } catch (err) {
+                                console.error(e);
+                            }
+                        } else if (lineEvent === 'METHOD_ENTRY') {
+                            const RegexMap = eventsRegexMain.get(lineEvent);
+                            for (let [key, value] of RegexMap) {
+                                if (key.test(line)) {
+                                    // console.log(value, "=>", key.test(line), "=>", line);
+                                    this.createMethodUnit(line, value, idx + 1);
+                                    break;
+                                }
+                            }
+                        } else if (lineEvent === 'METHOD_EXIT') {
+                            //process methodunit finish logic
+                            try {
+                                this.exitMethodUnit(idx + 1, line);
+                            } catch (e) {
+                                console.error(e);
+                            }
+                        } else {
+                            if (lineEvent === 'EXCEPTION_THROWN') {
+                                if (expThrownRegex.test(line)) {
+                                    let errStr = line.split('|').pop().trim();
+                                    this.createErrorObject(
+                                        idx + 1,
+                                        'EXCEPTION_THROWN',
+                                        errStr
+                                    );
+                                    // console.log('Exception Thrown: ', errStr);
+                                }
+                            } else if (lineEvent === 'FATAL_ERROR') {
+                                if (fatalErrRegex.test(line)) {
+                                    let errStr = line.split('|').pop().trim();
+                                    // console.log('Fatal Error: ', errStr);
+                                    this.createErrorObject(
+                                        idx + 1,
+                                        'FATAL_ERROR',
+                                        errStr
+                                    );
+                                }
+                            } else if (lineEvent === 'SOQL_EXECUTE_BEGIN') {
+                                this.soqlCount++;
+                                isSoql = true;
+                            } else if (lineEvent === 'DML_BEGIN') {
+                                this.dmlCount++;
+                                isDml = true;
+                            }
+                            this.addLinetoCUorMU(
+                                line,
+                                lineEvent,
+                                idx,
+                                isSoql,
+                                isDml
                             );
-                            // console.log('Exception Thrown: ', errStr);
+                            isDml = false;
+                            isSoql = false;
                         }
-                    } else if (lineEvent === 'FATAL_ERROR') {
-                        if (fatalErrRegex.test(line)) {
-                            let errStr = line.split('|').pop().trim();
-                            // console.log('Fatal Error: ', errStr);
-                            this.createErrorObject(
-                                idx + 1,
-                                'FATAL_ERROR',
-                                errStr
-                            );
-                        }
-                    } else if (lineEvent === 'SOQL_EXECUTE_BEGIN') {
-                        this.soqlCount++;
-                        isSoql = true;
-                    } else if (lineEvent === 'DML_BEGIN') {
-                        this.dmlCount++;
-                        isDml = true;
+
+                        this.addToFileDataPartial(line, lineEvent, idx + 1);
                     }
-                    this.addLinetoCUorMU(line, lineEvent, idx, isSoql, isDml);
-                    isDml = false;
-                    isSoql = false;
+                } else if (this.EXE_ANONYMOUS_MATCHER.test(line)) {
+                    isOrphan = false;
+                    this.execAnonyCount++;
+                    this.addToFileDataPartial(
+                        line,
+                        'EXECUTE_ANONYMOUS',
+                        idx + 1
+                    );
                 }
+                if (isOrphan === true) {
+                    // console.log(' Orphans:', line);
+                    this.addToFileDataPartial(line, 'ORPHAN', idx + 1);
+                }
+            });
 
-                this.addToFileDataPartial(line, lineEvent, idx + 1);
-            } else if (this.EXE_ANONYMOUS_MATCHER.test(line)) {
-                this.execAnonyCount++;
-                this.addToFileDataPartial(line, 'EXECUTE_ANONYMOUS', idx + 1);
-            } else {
-                // console.log("[fileUploader.js] Skipping line: ", line);
-                this.addToFileDataPartial(line, 'ORPHAN', idx + 1);
-            }
-        });
+            //publish fileData to MessageChannel
+            this.publishFileMetadata();
+            // parseResultToTree(this.result);
 
-        //publish fileData to MessageChannel
-        this.publishFileMetadata();
-        // parseResultToTree(this.result);
+            //navigate to log viewer
 
-        //navigate to log viewer
-        publish('appChannel', { activeApp: 'Log Viewer' });
-        console.log('Total stdExps: ', this.stdExpCount);
-        console.log('Total exeAnonys: ', this.execAnonyCount);
-        console.log('Total CodeUnits Count: ', this.codeUnitsCount);
-        console.log('Total MethodUnits Count: ', this.methodUnitsCount);
-        console.log('Final Result after processing res: ', this.result);
-        console.log('codeUnitsStack count: ', this.codeUnitsStack.length);
-        console.log('methodUnitsStack count: ', this.methodUnitsStack.length);
-        // console.log('treeNodes: ', this.treeNodes);
+            publish('appChannel', { activeApp: 'Log Viewer' });
+
+            console.log('Total stdExps: ', this.stdExpCount);
+            console.log('Total exeAnonys: ', this.execAnonyCount);
+            console.log('Total CodeUnits Count: ', this.codeUnitsCount);
+            console.log('Total MethodUnits Count: ', this.methodUnitsCount);
+            console.log('Final Result after processing res: ', this.result);
+            console.log('codeUnitsStack count: ', this.codeUnitsStack.length);
+            console.log(
+                'methodUnitsStack count: ',
+                this.methodUnitsStack.length
+            );
+            // console.log('treeNodes: ', this.treeNodes);
+        }
     }
 
     /*

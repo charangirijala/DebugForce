@@ -1,0 +1,90 @@
+<template>
+    <div class="slds-form-element">
+        <label class="slds-form-element__label"> Operator </label>
+        <div class="slds-form-element__control">
+            <div class="slds-combobox_container">
+                <div class={comboboxClass}>
+                    <div
+                        class="slds-combobox_form-element slds-input-has-icon slds-input-has-icon_right"
+                        role="none"
+                    >
+                        <input
+                            class="slds-combobox__input slds-input_faux fix-slds-input_faux"
+                            aria-label="Multi Select Combobox Input"
+                            aria-controls="multi-pick-list-dropdown-items"
+                            role="textbox"
+                            onclick={onComboboxClick}
+                            type="text"
+                            value={selectedItem}
+                            readonly
+                        />
+                        <span
+                            class="slds-icon_container slds-icon-utility-down slds-input__icon slds-input__icon_right"
+                            title="Click to open the dropdown"
+                        >
+                            <svg
+                                class="slds-icon slds-icon-text-default slds-icon_xx-small"
+                                aria-hidden="true"
+                            >
+                                <use
+                                    xlink:href="/public/assets/icons/utility-sprite/svg/symbols.svg#down"
+                                ></use>
+                            </svg>
+                            <span class="slds-assistive-text"
+                                >Click to open the dropdown</span
+                            >
+                        </span>
+                    </div>
+                    <div
+                        class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid"
+                        aria-label="Multi Select Combobox Dropdown"
+                        role="listbox"
+                    >
+                        <ul
+                            class="slds-listbox slds-listbox_vertical"
+                            role="presentation"
+                        >
+                            <template for:each={options} for:item="item">
+                                <li
+                                    key={item.value}
+                                    class="slds-listbox__item"
+                                    role="presentation"
+                                >
+                                    <div
+                                        class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_center"
+                                        onclick={onOptionClick}
+                                        data-optionvalue={item.value}
+                                        data-optionlabel={item.label}
+                                    >
+                                        <template lwc:if={item.isSelected}>
+                                            <span
+                                                class="slds-media__figure"
+                                                role="option"
+                                            >
+                                                <svg
+                                                    class="slds-icon slds-icon_xx-small slds-icon-text-default"
+                                                    aria-hidden="true"
+                                                >
+                                                    <use
+                                                        xlink:href="/public/assets/icons/utility-sprite/svg/symbols.svg#check"
+                                                    ></use>
+                                                </svg> </span
+                                        ></template>
+                                        <span
+                                            class="slds-media__body"
+                                            role="option"
+                                        >
+                                            <span class="slds-truncate"
+                                                >{item.label}</span
+                                            >
+                                        </span>
+                                    </div>
+                                </li>
+                            </template>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
