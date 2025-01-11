@@ -432,11 +432,11 @@
                                                                                         >
                                                                                             <div
                                                                                                 class={filter.filterItemClass}
-                                                                                                onclick={onFilterElementClick}
-                                                                                                data-filterid={filter.id}
                                                                                             >
                                                                                                 <button
                                                                                                     class="slds-button_reset slds-grow slds-has-blur-focus"
+                                                                                                    onclick={onFilterElementClick}
+                                                                                                    data-filterid={filter.id}
                                                                                                 >
                                                                                                     <span
                                                                                                         class="slds-show slds-text-body_small"
@@ -465,7 +465,7 @@
                                                                                                 <button
                                                                                                     class="slds-button slds-button_icon slds-button_icon slds-button_icon-small"
                                                                                                     title="Remove Filter"
-                                                                                                    data-id={filter.id}
+                                                                                                    data-filterid={filter.id}
                                                                                                     onclick={removeFilter}
                                                                                                 >
                                                                                                     <svg

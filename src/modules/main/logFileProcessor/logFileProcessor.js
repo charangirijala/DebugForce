@@ -162,7 +162,7 @@ export default class LogFileProcessor extends LightningElement {
                             try {
                                 this.exitCodeUnit(idx + 1, line);
                             } catch (err) {
-                                console.error(e);
+                                console.error(err);
                             }
                         } else if (lineEvent === 'METHOD_ENTRY') {
                             const RegexMap = eventsRegexMain.get(lineEvent);
@@ -177,8 +177,8 @@ export default class LogFileProcessor extends LightningElement {
                             //process methodunit finish logic
                             try {
                                 this.exitMethodUnit(idx + 1, line);
-                            } catch (e) {
-                                console.error(e);
+                            } catch (err) {
+                                console.error(err);
                             }
                         } else {
                             if (lineEvent === 'EXCEPTION_THROWN') {
