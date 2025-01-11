@@ -1,0 +1,22 @@
+<template>
+    <div class="help-text-container">
+        <span
+            class="help-text-icon"
+            tabindex="0"
+            role="tooltip"
+            aria-label={content}
+        >
+            <svg
+                focusable="false"
+                data-key="info"
+                aria-hidden="true"
+                class="slds-button__icon"
+            >
+                <use
+                    xlink:href="/public/assets/icons/utility-sprite/svg/symbols.svg#info"
+                ></use>
+            </svg>
+        </span>
+        <div class="help-text-content">{content}</div>
+    </div>
+</template>
