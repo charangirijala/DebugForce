@@ -18,6 +18,7 @@ export default class logViewer extends LightningElement {
     LineNumMap = new Map();
     LineNumFocus = null;
     filterPickListMaster = [];
+    previousFilters = [];
     logChannelSub = null;
     isFilterEditing = false;
     isFilterPopOverShowing = false;
@@ -79,7 +80,8 @@ export default class logViewer extends LightningElement {
                             this.filterPickListMaster =
                                 data.eventsPicklistValues.map((str) => ({
                                     value: str,
-                                    label: str
+                                    label: str,
+                                    isInUse: false
                                 }));
                             const payload = {
                                 currentFilterIdx: null,
@@ -100,7 +102,7 @@ export default class logViewer extends LightningElement {
         if (!this.filterChannelSub) {
             this.filterChannelSub = subscribe('filterChannel', (data) => {
                 if (data.activeFilters) {
-                    this.activeFilters = this.activeFilters;
+                    this.activeFilters = data.activeFilters;
                 }
             });
         }
@@ -162,7 +164,12 @@ export default class logViewer extends LightningElement {
                 }
             }
         }
-        console.log('Rerendering: ', this.activeFilters);
+        console.log(
+            'Rerendering: activeFilters:',
+            this.activeFilters,
+            ' Prev filters: ',
+            this.previousFilters
+        );
     }
 
     get hasActiveFilters() {
@@ -217,12 +224,21 @@ export default class logViewer extends LightningElement {
     // ################# FILTERS START#########################################################
 
     closeFilter() {
+        this.previousFilters = null;
         this.filterClass =
             'slds-panel slds-size_medium slds-panel_docked slds-panel_docked-right slds-panel_drawer filter-panel slds-hidden';
     }
     openFilter() {
-        this.filterClass =
-            'slds-panel slds-size_medium slds-panel_docked slds-panel_docked-right slds-panel_drawer filter-panel slds-is-open';
+        if (this.filterClass.includes('slds-is-open')) {
+            this.closeFilter();
+        } else {
+            this.previousFilters = JSON.parse(
+                JSON.stringify(this.activeFilters)
+            );
+            console.log('openFilter called: ', this.previousFilters);
+            this.filterClass =
+                'slds-panel slds-size_medium slds-panel_docked slds-panel_docked-right slds-panel_drawer filter-panel slds-is-open';
+        }
     }
 
     get ShowFilterSave() {
@@ -233,7 +249,7 @@ export default class logViewer extends LightningElement {
     }
 
     removeFilter(event) {
-        const filterIndex = event.target.dataset.id;
+        const filterIndex = event.target.dataset.filterid;
         this.isFilterPopOverShowing = false;
         let idx = 0;
         console.log('[LogPreviewer.js] removeFilter called', filterIndex);
@@ -244,7 +260,8 @@ export default class logViewer extends LightningElement {
         this.activeFilters.forEach((filter) => {
             filter.id = idx++;
         });
-        this.currentEditFilterIdx = 0;
+        this.currentEditFilterIdx = null;
+        this.previousFilters = JSON.parse(JSON.stringify(this.activeFilters));
     }
 
     addFilter() {
@@ -284,12 +301,20 @@ export default class logViewer extends LightningElement {
         this.isFilterEditing = false;
         this.handlePopoverClose();
         this.activeFilters = [];
+        this.previousFilters = [];
     }
 
     cancelFilterEdit() {
         this.isFilterEditing = false;
         this.isFilterPopOverShowing = false;
-        this.activeFilters.pop();
+        console.log('prev filters: ', this.previousFilters);
+        if (this.previousFilters === null) {
+            this.activeFilters = [];
+        } else {
+            this.activeFilters = JSON.parse(
+                JSON.stringify(this.previousFilters)
+            );
+        }
     }
 
     saveFilterEdit() {
@@ -326,7 +351,7 @@ export default class logViewer extends LightningElement {
             item.id = idx;
         });
 
-        console.log('filters after save:', typeof this.activeFilters);
+        this.previousFilters = JSON.parse(JSON.stringify(this.activeFilters));
     }
 
     closeFilterPopoverOnClick(event) {
@@ -381,10 +406,10 @@ export default class logViewer extends LightningElement {
                         : false;
                 // console.log('clicked in boundary: ', isInBoundary);
                 if (eventDropdown) {
-                    console.log(
-                        'Dropdown activated: ',
-                        eventDropdown.getBoundingClientRect()
-                    );
+                    // console.log(
+                    //     'Dropdown activated: ',
+                    //     eventDropdown.getBoundingClientRect()
+                    // );
                     const dropdownBoundaries =
                         eventDropdown.getBoundingClientRect();
                     const dropXLeft = dropdownBoundaries.left;
@@ -447,10 +472,10 @@ export default class logViewer extends LightningElement {
             const popover = this.template.querySelector('.popover-section');
             const filterPanel = this.template.querySelector('.filter-panel');
             const filterPanelTop = filterPanel.getBoundingClientRect().top;
-            console.log(
-                'panel boundaries: ',
-                filterPanel.getBoundingClientRect()
-            );
+            // console.log(
+            //     'panel boundaries: ',
+            //     filterPanel.getBoundingClientRect()
+            // );
             if (
                 this.currentEditFilterIdx !== null &&
                 this.currentEditFilterIdx !== undefined

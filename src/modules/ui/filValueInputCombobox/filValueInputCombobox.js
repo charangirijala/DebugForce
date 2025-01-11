@@ -17,55 +17,70 @@ export default class FilValueInputCombobox extends LightningElement {
     connectedCallback() {
         if (!this.filterSubscription) {
             this.filterSubscription = subscribe('filterChannel', (data) => {
+                // Update picklist values if provided
+                if (data.eventsPicklistValues) {
+                    this.pickListValues = [...data.eventsPicklistValues];
+                }
+                // Ensure activeFilters is an array and has data
                 if (
                     Array.isArray(data.activeFilters) &&
                     data.activeFilters.length > 0
                 ) {
-                    this.activeFilters = data.activeFilters;
-                    if (data.currentFilterIdx !== null) {
+                    // Create a new reference for activeFilters to ensure immutability
+                    this.activeFilters = [...data.activeFilters];
+
+                    if (
+                        data.currentFilterIdx !== null &&
+                        data.currentFilterIdx < this.activeFilters.length
+                    ) {
                         this.currentFilterIdx = data.currentFilterIdx;
-                        let field =
-                            data.activeFilters[data.currentFilterIdx].field;
-                        let value =
-                            data.activeFilters[data.currentFilterIdx].value;
-                        let filterValues =
-                            data.activeFilters[data.currentFilterIdx]
-                                .filterValues;
+
+                        const currentFilter =
+                            this.activeFilters[this.currentFilterIdx];
+                        const { field, value, filterValues } = currentFilter;
+
+                        // Reset or initialize filter properties based on field type
                         if (field === 'New Filter' || field === null) {
                             this.isFilterValuePicklist = false;
-                            this.selectedItemPlaceHolder = 'enter value..';
+                            this.selectedItemPlaceHolder = 'Enter value...';
                             this.inputValue = '';
                         } else if (field === 'line') {
-                            if (value !== '' && value !== null) {
-                                this.inputValue = value;
-                            } else {
-                                this.selectedItemPlaceHolder = 'enter value..';
-                                this.inputValue = '';
-                            }
                             this.isFilterValuePicklist = false;
+                            this.inputValue = value || '';
+                            this.selectedItemPlaceHolder = 'Enter value...';
                         } else if (field === 'event') {
-                            if (filterValues.length === 0) {
-                                this.selectedItemPlaceHolder = 'Select Event';
-                                this.selectedEvents = [];
-                            } else {
+                            this.isFilterValuePicklist = true;
+
+                            if (
+                                Array.isArray(filterValues) &&
+                                filterValues.length > 0
+                            ) {
                                 this.selectedEvents = filterValues;
                                 this.selectedItemPlaceHolder = `${this.selectedEvents.length} events selected`;
+                            } else {
+                                this.selectedItemPlaceHolder = 'Select Event';
+                                this.selectedEvents = [];
                             }
-                            this.isFilterValuePicklist = true;
+
                             this.generateOptions();
                         }
+                    } else {
+                        console.warn(
+                            'Invalid currentFilterIdx received:',
+                            data.currentFilterIdx
+                        );
                     }
+                } else {
+                    console.warn(
+                        'Invalid or empty activeFilters received:',
+                        data.activeFilters
+                    );
                 }
 
+                // Handle dropdown close logic
                 if (data.isValPopOpen === false) {
                     this.closeDropdown();
                 }
-
-                if (
-                    data.eventsPicklistValues !== undefined &&
-                    data.eventsPicklistValues !== null
-                )
-                    this.pickListValues = data.eventsPicklistValues;
             });
         }
     }
@@ -113,44 +128,91 @@ export default class FilValueInputCombobox extends LightningElement {
         this.closeDropdown();
         this.publishToChannel(false, false, false);
     }
-    generateOptions() {
+
+    filterPicklistValues() {
         if (
-            Array.isArray(this.pickListValues) &&
-            this.pickListValues.length > 0
+            !Array.isArray(this.pickListValues) ||
+            !Array.isArray(this.activeFilters)
         ) {
-            this.options = this.pickListValues.map((item) => {
-                return {
-                    label: item.label,
-                    value: item.value,
-                    isSelected: this.checkEventSelected(item.value)
-                };
-            });
+            return [];
+        }
+
+        // Gather all values already used in 'event' filters
+        const usedValues = new Set(
+            this.activeFilters
+                .filter((filter) => filter.field === 'event') // Only consider 'event' filters
+                .flatMap((filter) => filter.filterValues || [])
+        );
+
+        // Return pickListValues excluding the used ones
+        return this.pickListValues.filter(
+            (option) => !usedValues.has(option.value)
+        );
+    }
+    generateOptions() {
+        const availableOptions = this.filterPicklistValues(); // Filter out used values
+
+        if (Array.isArray(availableOptions) && availableOptions.length > 0) {
+            this.options = availableOptions.map((item) => ({
+                label: item.label,
+                value: item.value,
+                isInUse: item.isInUse,
+                isSelected: this.checkEventSelected(item.value)
+            }));
         } else {
             this.options = [
                 {
-                    label: 'Oops!! looks like there are no events!!..',
+                    label: 'Oops!! looks like there are no available events!',
                     value: 'noevents',
                     isSelected: false,
                     isDisabled: true
                 }
             ];
         }
-        console.log('picklistVals ops generated', this.options);
+        //    console.log('picklistVals ops generated', this.options);
     }
     checkEventSelected(event) {
         if (this.selectedEvents.length === 0) return false;
         const found = this.selectedEvents.find((item) => item === event);
         return found === undefined ? false : true;
     }
+
     setEventsOnFilter() {
-        this.activeFilters[this.currentFilterIdx].filterValues =
-            this.selectedEvents;
-        this.activeFilters[this.currentFilterIdx].value =
-            this.selectedEvents.toString();
-        this.activeFilters[this.currentFilterIdx].isEdited = true;
-        this.activeFilters[this.currentFilterIdx].filterItemClass =
+        if (
+            !this.activeFilters ||
+            this.currentFilterIdx === undefined ||
+            this.selectedEvents === undefined
+        ) {
+            console.error('Required properties are not properly initialized.');
+            return;
+        }
+
+        // Update the current active filter
+        const currentFilter = this.activeFilters[this.currentFilterIdx];
+        if (!currentFilter) {
+            console.error(
+                `No active filter found at index ${this.currentFilterIdx}.`
+            );
+            return;
+        }
+
+        currentFilter.filterValues = this.selectedEvents;
+        currentFilter.value = this.selectedEvents.toString();
+        currentFilter.isEdited = true;
+        currentFilter.filterItemClass =
             'slds-filters__item slds-grid slds-grid_vertical-align-center filter-being-edited';
 
+        // Update picklist values
+        if (this.pickListValues) {
+            this.pickListValues = this.pickListValues.map((item) => ({
+                ...item
+            }));
+            //   console.log('Updated picklist values:', this.pickListValues);
+        } else {
+            console.warn('pickListValues is null or undefined.');
+        }
+
+        // Notify other components about the changes
         this.publishToChannel(false, false, true);
     }
 
@@ -160,18 +222,35 @@ export default class FilValueInputCombobox extends LightningElement {
     }
 
     onInputChange(event) {
-        //    console.log('Event val: ', event.target.value);
+        // Capture the input value
         this.inputValue = event.target.value;
+
+        // Ensure currentFilterIdx is valid and activeFilters has content
         if (
             this.activeFilters.length > 0 &&
             this.currentFilterIdx !== undefined &&
             this.currentFilterIdx !== null
         ) {
-            this.activeFilters[this.currentFilterIdx].isPicklist = false;
-            this.activeFilters[this.currentFilterIdx].value = this.inputValue;
-            this.activeFilters[this.currentFilterIdx].isEdited = true;
-            this.activeFilters[this.currentFilterIdx].filterItemClass =
-                'slds-filters__item slds-grid slds-grid_vertical-align-center filter-being-edited';
+            // Create a new updated filter object
+            const updatedFilter = {
+                ...this.activeFilters[this.currentFilterIdx],
+                isPicklist: false,
+                value: this.inputValue,
+                isEdited: true,
+                filterItemClass:
+                    'slds-filters__item slds-grid slds-grid_vertical-align-center filter-being-edited'
+            };
+
+            // Replace the specific filter in the activeFilters array
+            this.activeFilters = [
+                ...this.activeFilters.slice(0, this.currentFilterIdx),
+                updatedFilter,
+                ...this.activeFilters.slice(this.currentFilterIdx + 1)
+            ];
+
+            //   console.log('Updated activeFilters:', this.activeFilters);
+
+            // Trigger any required event or publish changes
             this.publishToChannel(false, false, false);
         }
     }
