@@ -140,13 +140,18 @@ export default class FilValueInputCombobox extends LightningElement {
         // Gather all values already used in 'event' filters
         const usedValues = new Set(
             this.activeFilters
-                .filter((filter) => filter.field === 'event') // Only consider 'event' filters
+                .filter(
+                    (filter, idx) =>
+                        filter.field === 'event' &&
+                        idx !== this.currentFilterIdx
+                ) // Only consider 'event' filters
                 .flatMap((filter) => filter.filterValues || [])
         );
-
         // Return pickListValues excluding the used ones
         return this.pickListValues.filter(
-            (option) => !usedValues.has(option.value)
+            (option) =>
+                !usedValues.has(option.value) ||
+                this.checkEventSelected(option.value)
         );
     }
     generateOptions() {
@@ -169,7 +174,7 @@ export default class FilValueInputCombobox extends LightningElement {
                 }
             ];
         }
-        //    console.log('picklistVals ops generated', this.options);
+        // console.log('picklistVals ops generated', this.options);
     }
     checkEventSelected(event) {
         if (this.selectedEvents.length === 0) return false;

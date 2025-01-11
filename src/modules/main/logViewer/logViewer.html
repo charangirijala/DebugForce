@@ -411,14 +411,23 @@
                                                                             <template
                                                                                 if:true={hasActiveFilters}
                                                                             >
-                                                                                <h3
-                                                                                    class="slds-text-body_small slds-m-vertical_x-small"
+                                                                                <div
+                                                                                    class="slds-grid filter-help"
                                                                                 >
-                                                                                    Matching
-                                                                                    all
-                                                                                    these
-                                                                                    filters
-                                                                                </h3>
+                                                                                    <h3
+                                                                                        class="slds-text-body_small slds-m-vertical_x-small slds-var-m-right_xx-small"
+                                                                                    >
+                                                                                        Matching
+                                                                                        all
+                                                                                        these
+                                                                                        filters
+                                                                                    </h3>
+                                                                                    <div>
+                                                                                        <ui-help-text
+                                                                                            content="Apply one filter per operator / field for optimal results. Note that all filters are combined using the AND operation by default."
+                                                                                        ></ui-help-text>
+                                                                                    </div>
+                                                                                </div>
                                                                                 <ol
                                                                                     class="slds-list_vertical slds-list_vertical-space"
                                                                                 >

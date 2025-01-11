@@ -1,5 +1,6 @@
 /* eslint-disable inclusive-language/use-inclusive-words */
 import { LightningElement, track } from 'lwc';
+import filterData from 'services/filters';
 import { publish, subscribe } from 'services/pubsub';
 
 export default class logViewer extends LightningElement {
@@ -50,6 +51,7 @@ export default class logViewer extends LightningElement {
     pageNumber = 0;
     linesPerPage = 100;
     @track displayedData = [];
+    dataInUse = [];
     fileData = [];
     //     @wire(MessageContext)
     //     messageContext;
@@ -60,9 +62,10 @@ export default class logViewer extends LightningElement {
                 if (data) {
                     if (data.fileData) {
                         this.fileData = data.fileData;
+                        this.dataInUse = data.fileData;
                         this.pageNumber = 1;
                         this.noOfPages = Math.ceil(
-                            this.fileData.length / this.linesPerPage
+                            this.dataInUse.length / this.linesPerPage
                         );
                         this.calculations();
                     }
@@ -184,15 +187,23 @@ export default class logViewer extends LightningElement {
             this.linesPerPage = input;
             this.pageNumber = 1;
             this.noOfPages = Math.ceil(
-                this.fileData.length / this.linesPerPage
+                this.dataInUse.length / this.linesPerPage
             );
             this.calculations();
         }
     }
-
+    refreshPages() {
+        this.noOfPages = Math.ceil(this.dataInUse.length / this.linesPerPage);
+        this.pageNumber = this.noOfPages === 0 ? 0 : 1;
+        this.calculations();
+    }
     calculations() {
+        if (this.dataInUse.length === 0) {
+            this.displayedData = [];
+            return;
+        }
         if (this.pageNumber !== 0) {
-            this.displayedData = this.fileData.slice(
+            this.displayedData = this.dataInUse.slice(
                 this.linesPerPage * (this.pageNumber - 1),
                 this.linesPerPage * this.pageNumber
             );
@@ -235,7 +246,7 @@ export default class logViewer extends LightningElement {
             this.previousFilters = JSON.parse(
                 JSON.stringify(this.activeFilters)
             );
-            console.log('openFilter called: ', this.previousFilters);
+            // console.log('openFilter called: ', this.previousFilters);
             this.filterClass =
                 'slds-panel slds-size_medium slds-panel_docked slds-panel_docked-right slds-panel_drawer filter-panel slds-is-open';
         }
@@ -252,7 +263,7 @@ export default class logViewer extends LightningElement {
         const filterIndex = event.target.dataset.filterid;
         this.isFilterPopOverShowing = false;
         let idx = 0;
-        console.log('[LogPreviewer.js] removeFilter called', filterIndex);
+        // console.log('[LogPreviewer.js] removeFilter called', filterIndex);
         if (filterIndex >= 0) {
             // only splice array when item is found
             this.activeFilters.splice(filterIndex, 1); // 2nd parameter means remove one item only
@@ -262,6 +273,8 @@ export default class logViewer extends LightningElement {
         });
         this.currentEditFilterIdx = null;
         this.previousFilters = JSON.parse(JSON.stringify(this.activeFilters));
+        this.dataInUse = filterData(this.activeFilters, this.fileData);
+        this.refreshPages();
     }
 
     addFilter() {
@@ -302,12 +315,14 @@ export default class logViewer extends LightningElement {
         this.handlePopoverClose();
         this.activeFilters = [];
         this.previousFilters = [];
+        this.dataInUse = this.fileData;
+        this.refreshPages();
     }
 
     cancelFilterEdit() {
         this.isFilterEditing = false;
         this.isFilterPopOverShowing = false;
-        console.log('prev filters: ', this.previousFilters);
+        // console.log('prev filters: ', this.previousFilters);
         if (this.previousFilters === null) {
             this.activeFilters = [];
         } else {
@@ -352,6 +367,21 @@ export default class logViewer extends LightningElement {
         });
 
         this.previousFilters = JSON.parse(JSON.stringify(this.activeFilters));
+
+        //call filterData from filters
+        if (
+            this.activeFilters.length > 0 &&
+            this.fileData.length > 0 &&
+            this.fileData !== undefined &&
+            this.fileData !== null
+        ) {
+            this.dataInUse = filterData(this.activeFilters, this.fileData);
+            // console.log('filtered data: ', this.dataInUse);
+            this.refreshPages();
+        } else {
+            this.dataInUse = this.fileData;
+            this.refreshPages();
+        }
     }
 
     closeFilterPopoverOnClick(event) {

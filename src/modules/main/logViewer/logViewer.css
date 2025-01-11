@@ -13,6 +13,9 @@ a {
     color: #ba0517;
 }
 
+.filter-help {
+    align-items: center;
+}
 .log-errors-no-err-text {
     color: #396547;
 }
