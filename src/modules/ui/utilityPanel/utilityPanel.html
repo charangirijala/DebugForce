@@ -263,7 +263,14 @@
                                                     class="slds-truncate"
                                                     title={node.name}
                                                 >
-                                                    {node.name}
+                                                    <button
+                                                        class="slds-button unit-name"
+                                                        onclick={switchToUnitView}
+                                                        data-unitduration={node.unitDuration}
+                                                        data-unitname={node.name}
+                                                    >
+                                                        {node.name}
+                                                    </button>
                                                 </div>
                                             </td>
                                             <td

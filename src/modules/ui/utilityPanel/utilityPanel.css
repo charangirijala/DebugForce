@@ -41,3 +41,22 @@ th {
 .slds-utility-panel__body {
     overflow: auto;
 }
+
+.unit-name {
+    padding-top: 0px;
+    padding-bottom: 0px;
+    line-height: normal;
+}
+
+.unit-name:hover {
+    text-decoration: underline;
+}
+
+.unit-name:focus {
+    box-shadow: none;
+    -webkit-box-shadow: none;
+}
+
+.unit-name:active {
+    border: none;
+}

@@ -28,11 +28,12 @@
                                                     class="slds-page-header__name-title"
                                                 >
                                                     <h1>
-                                                        <span>Log Viewer</span
+                                                        <span
+                                                            >{lvTitleHead}</span
                                                         ><span
                                                             class="slds-page-header__title slds-truncate"
-                                                            title={fileMetadata.fileName}
-                                                            >{fileMetadata.fileName}</span
+                                                            title={lvTitle}
+                                                            >{lvTitle}</span
                                                         >
                                                     </h1>
                                                 </div>
@@ -167,6 +168,7 @@
                                                                     <button
                                                                         class="slds-button slds-button_icon-border action-bar-action-refreshReport reportAction report-action-refreshReport filtersButton"
                                                                         type="button"
+                                                                        onclick={resetViewer}
                                                                     >
                                                                         <svg
                                                                             aria-hidden="true"
@@ -554,7 +556,7 @@
                                                                                         >
                                                                                             <ui-search
                                                                                                 onclosesearch={handleSearch}
-                                                                                                logtobe-filtered={fileData}
+                                                                                                logtobe-filtered={dataInUse}
                                                                                                 onmatchchange={goToMatch}
                                                                                                 onsearchres={processSearchRes}
                                                                                                 onnores={processNoSearchRes}
@@ -842,6 +844,7 @@
                 <ui-utility-panel
                     panel-toggle={callStackToggle}
                     onclosepanel={closeCallStack}
+                    onunitview={openUnitView}
                     data={result}
                 ></ui-utility-panel>
             </template>

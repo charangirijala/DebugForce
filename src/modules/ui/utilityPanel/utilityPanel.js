@@ -70,6 +70,21 @@ export default class UtilityPanel extends LightningElement {
         }
     }
 
+    switchToUnitView(event) {
+        const name = event.target.dataset.unitname;
+        const duration = event.target.dataset.unitduration;
+        console.log('Name: ', name, 'duration: ', duration);
+
+        this.dispatchEvent(
+            new CustomEvent('unitview', {
+                detail: {
+                    name: name,
+                    duration: duration
+                }
+            })
+        );
+    }
+
     expandNode(parentId, level, nodeMap) {
         // Find the index of parent node in the current array
         const parentIndex = this.nowShowingNodes.findIndex(

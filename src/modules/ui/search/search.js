@@ -21,7 +21,7 @@ export default class Search extends LightningElement {
     handleSearchInput(event) {
         clearTimeout(this.timeoutId);
         const input = event.target.value;
-        console.log('entered: ', input);
+        // console.log('entered: ', input);
         this.timeoutId = setTimeout(() => {
             this.searchLog(input);
         }, 500);
@@ -82,7 +82,7 @@ export default class Search extends LightningElement {
             const results = this.logtobeFiltered.filter((log) =>
                 log.line.includes(searchTerm)
             );
-
+            console.log('search results: ', results);
             if (results.length > 0) {
                 //  console.log('Found logs:', results);
                 this.matchedLines = results.map((log) => log.lineNumber);

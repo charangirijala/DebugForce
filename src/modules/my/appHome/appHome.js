@@ -8,7 +8,7 @@ export default class AppHome extends LightningElement {
         if (!this.appChannelSub) {
             this.appChannelSub = subscribe('appChannel', (data) => {
                 this.activeApp = data.activeApp;
-                console.log('activeApp: ', this.activeApp);
+                // console.log('activeApp: ', this.activeApp);
             });
         }
     }
