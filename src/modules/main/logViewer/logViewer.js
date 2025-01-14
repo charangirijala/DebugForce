@@ -4,9 +4,16 @@ import filterData from 'services/filters';
 import { publish, subscribe } from 'services/pubsub';
 
 export default class logViewer extends LightningElement {
+    isUnitView = false;
+    unitViewBoundaries = {
+        startTime: 0,
+        endTime: 0
+    };
     errorCenterX = 0;
     errors = [];
     errorPopoverOpen = false;
+    lvTitle = '';
+    lvTitleHead = 'Log Viewer';
     filterChannelSub = null;
     goToPlaceholder = 'Go to line';
     filterHasLabel = true;
@@ -71,6 +78,10 @@ export default class logViewer extends LightningElement {
                     }
                     if (data.fileMetadata) {
                         this.fileMetadata = data.fileMetadata;
+                        this.lvTitle =
+                            this.fileMetadata.fileName !== ''
+                                ? this.fileMetadata.fileName
+                                : 'Log';
                         this.errors = data.fileMetadata.errors;
                     }
 
@@ -146,13 +157,13 @@ export default class logViewer extends LightningElement {
             if (this.LineNumMap.size > 0) {
                 if (this.LineNumMap.has(this.pageNumber)) {
                     const highEle = this.LineNumMap.get(this.pageNumber);
-                    highEle.forEach((ele) => {
+                    highEle.forEach(({ logLineNum, pageLineNum }) => {
                         const element = this.template.querySelector(
-                            `[data-logid="${ele}"]`
+                            `[data-logid="${logLineNum}"]`
                         );
 
                         if (element) {
-                            if (this.LineNumFocus !== ele) {
+                            if (this.LineNumFocus !== pageLineNum) {
                                 element.style.backgroundColor =
                                     'rgb(250, 255, 189)';
                             } else {
@@ -273,8 +284,41 @@ export default class logViewer extends LightningElement {
         });
         this.currentEditFilterIdx = null;
         this.previousFilters = JSON.parse(JSON.stringify(this.activeFilters));
-        this.dataInUse = filterData(this.activeFilters, this.fileData);
-        this.refreshPages();
+        this.filterDataHelper();
+    }
+
+    filterDataHelper() {
+        if (
+            this.activeFilters.length > 0 &&
+            this.fileData.length > 0 &&
+            this.fileData !== undefined &&
+            this.fileData !== null
+        ) {
+            if (this.isUnitView) {
+                this.dataInUse = filterData(
+                    this.activeFilters,
+                    this.fileData.slice(
+                        this.unitViewBoundaries.startTime - 1,
+                        this.unitViewBoundaries.endTime
+                    )
+                );
+            } else {
+                this.dataInUse = filterData(this.activeFilters, this.fileData);
+            }
+
+            // console.log('filtered data: ', this.dataInUse);
+            this.refreshPages();
+        } else {
+            if (this.isUnitView) {
+                this.dataInUse = this.fileData.slice(
+                    this.unitViewBoundaries.startTime - 1,
+                    this.unitViewBoundaries.endTime
+                );
+            } else {
+                this.dataInUse = this.fileData;
+            }
+            this.refreshPages();
+        }
     }
 
     addFilter() {
@@ -315,7 +359,13 @@ export default class logViewer extends LightningElement {
         this.handlePopoverClose();
         this.activeFilters = [];
         this.previousFilters = [];
-        this.dataInUse = this.fileData;
+
+        this.dataInUse = this.isUnitView
+            ? this.fileData.slice(
+                  this.unitViewBoundaries.startTime - 1,
+                  this.unitViewBoundaries.endTime
+              )
+            : this.fileData;
         this.refreshPages();
     }
 
@@ -369,19 +419,7 @@ export default class logViewer extends LightningElement {
         this.previousFilters = JSON.parse(JSON.stringify(this.activeFilters));
 
         //call filterData from filters
-        if (
-            this.activeFilters.length > 0 &&
-            this.fileData.length > 0 &&
-            this.fileData !== undefined &&
-            this.fileData !== null
-        ) {
-            this.dataInUse = filterData(this.activeFilters, this.fileData);
-            // console.log('filtered data: ', this.dataInUse);
-            this.refreshPages();
-        } else {
-            this.dataInUse = this.fileData;
-            this.refreshPages();
-        }
+        this.filterDataHelper();
     }
 
     closeFilterPopoverOnClick(event) {
@@ -536,13 +574,7 @@ export default class logViewer extends LightningElement {
 
     //################# FILTERS END ############################################################
 
-    handleCallStackChange() {
-        this.callStackToggle = !this.callStackToggle;
-    }
-    closeCallStack() {
-        this.callStackToggle = false;
-    }
-
+    //################################# SEARCH FUNCTIONALITY ##################################
     handleSearch() {
         this.isSearching = !this.isSearching;
         if (this.isSearching === false) {
@@ -557,11 +589,26 @@ export default class logViewer extends LightningElement {
         if (Array.isArray(lineNumbers)) {
             lineNumbers.forEach((l) => {
                 if (this.linesPerPage !== 0) {
-                    const pNum = Math.ceil(l / this.linesPerPage);
+                    let pageLineNum = 0;
+                    const dataIndex = this.dataInUse.findIndex(
+                        (data) => data.lineNumber === l
+                    );
+                    if (dataIndex !== -1) {
+                        pageLineNum = dataIndex + 1;
+                    }
+                    const pNum = Math.ceil(pageLineNum / this.linesPerPage);
                     if (this.LineNumMap.has(pNum)) {
-                        this.LineNumMap.get(pNum).push(l);
+                        this.LineNumMap.get(pNum).push({
+                            logLineNum: l,
+                            pageLineNum: pageLineNum
+                        });
                     } else {
-                        this.LineNumMap.set(pNum, [l]);
+                        this.LineNumMap.set(pNum, [
+                            {
+                                logLineNum: l,
+                                pageLineNum: pageLineNum
+                            }
+                        ]);
                     }
                 }
             });
@@ -569,10 +616,41 @@ export default class logViewer extends LightningElement {
         // console.log('Map: ', this.LineNumMap);
     }
 
+    processNoSearchRes() {
+        this.LineNumFocus = null;
+        if (this.LineNumMap.size > 0) {
+            if (this.LineNumMap.has(this.pageNumber)) {
+                const highEle = this.LineNumMap.get(this.pageNumber);
+                highEle.forEach(({ logLineNum, pageLineNum }) => {
+                    const element = this.template.querySelector(
+                        `[data-logid="${logLineNum}"]`
+                    );
+                    if (element) {
+                        element.style.backgroundColor = 'rgba(0, 0, 0, 0)';
+                    }
+                });
+            }
+        }
+        this.LineNumMap = new Map();
+    }
+
     goToMatch(event) {
         const lineNumber = event.detail;
+        let pageLineNum = 0;
         // console.log('lineNumber: ', lineNumber);
-        this.goToPage(lineNumber);
+        const dataIndex = this.dataInUse.findIndex(
+            (data) => data.lineNumber === lineNumber
+        );
+        if (dataIndex !== -1) {
+            pageLineNum = dataIndex + 1;
+        }
+        // console.log(
+        //     'this.dataInUse: ',
+        //     this.dataInUse,
+        //     'linenumber: ',
+        //     pageLineNum
+        // );
+        this.goToPage(pageLineNum);
     }
 
     goToPage(lineNumber) {
@@ -583,22 +661,57 @@ export default class logViewer extends LightningElement {
         this.calculations();
     }
 
-    processNoSearchRes() {
-        this.LineNumFocus = null;
-        if (this.LineNumMap.size > 0) {
-            if (this.LineNumMap.has(this.pageNumber)) {
-                const highEle = this.LineNumMap.get(this.pageNumber);
-                highEle.forEach((ele) => {
-                    const element = this.template.querySelector(
-                        `[data-logid="${ele}"]`
-                    );
-                    if (element) {
-                        element.style.backgroundColor = 'rgba(0, 0, 0, 0)';
-                    }
-                });
-            }
+    //################################# SEARCH FUNCTIONALITY END ##############################
+    openUnitView(event) {
+        // console.log('from logviewer', event.detail);
+        this.isUnitView = true;
+        const duration = event.detail.duration;
+        const name = event.detail.name;
+        const [startTimeStr, endTimeStr] = duration
+            .split('-')
+            .map((str) => str.trim());
+
+        // Convert string timestamps to numbers
+        const startTime = parseInt(startTimeStr, 10);
+        const endTime = parseInt(endTimeStr, 10);
+
+        this.unitViewBoundaries.startTime = startTime;
+        this.unitViewBoundaries.endTime = endTime;
+
+        if (isNaN(startTime) || isNaN(endTime)) {
+            console.warn(
+                'Invalid unitDuration format uniqueId and duration not generated',
+                event.detail
+            );
+            return;
         }
-        this.LineNumMap = new Map();
+        this.lvTitle = name;
+        this.lvTitleHead = 'Now Showing';
+        this.dataInUse = this.fileData.slice(startTime - 1, endTime);
+        if (this.activeFilters.length > 0) {
+            this.dataInUse = filterData(this.activeFilters, this.dataInUse);
+        }
+        this.refreshPages();
+    }
+
+    resetViewer() {
+        this.dataInUse = this.fileData;
+        this.isUnitView = false;
+        this.unitViewBoundaries.startTime = 0;
+        this.unitViewBoundaries.endTime = 0;
+        this.refreshPages();
+        this.isFilterEditing = false;
+        this.handlePopoverClose();
+        this.activeFilters = [];
+        this.previousFilters = [];
+        this.lvTitle = this.fileMetadata.fileName;
+        this.lvTitleHead = 'Log Viewer';
+    }
+    handleCallStackChange() {
+        this.callStackToggle = !this.callStackToggle;
+    }
+    closeCallStack() {
+        this.callStackToggle = false;
     }
 
     goToLine(event) {
