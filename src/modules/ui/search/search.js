@@ -80,7 +80,7 @@ export default class Search extends LightningElement {
         }
         if (searchTerm.length >= 2 && searchTerm !== undefined) {
             const results = this.logtobeFiltered.filter((log) =>
-                log.line.includes(searchTerm)
+                log.line.toLowerCase().includes(searchTerm.toLowerCase())
             );
             console.log('search results: ', results);
             if (results.length > 0) {

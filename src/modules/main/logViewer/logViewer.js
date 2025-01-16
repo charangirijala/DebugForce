@@ -10,6 +10,14 @@ export default class logViewer extends LightningElement {
         endTime: 0
     };
     errorCenterX = 0;
+    viewerState = {
+        filter: false,
+        callStack: false,
+        linesPerPage: false,
+        search: false,
+        reset: false,
+        logErrors: false
+    };
     errors = [];
     errorPopoverOpen = false;
     lvTitle = '';
@@ -135,7 +143,29 @@ export default class logViewer extends LightningElement {
     get errCount() {
         return this.errors.length;
     }
+    manageViewerState(interactionName, closeOtherInts) {
+        // console.log('managing interaction: ', interactionName);
+        Object.keys(this.viewerState).forEach((key) => {
+            if (key === interactionName) {
+                this.viewerState[key] =
+                    this.viewerState[key] === true ? false : true;
+            } else {
+                if (this.viewerState[key] === true && closeOtherInts === true) {
+                    if (key === 'filter') {
+                        this.closeFilter();
+                    } else if (key === 'callStack') {
+                        this.closeCallStack();
+                    } else if (key === 'search') {
+                        this.closeSearch();
+                    } else if (key === 'logErrors') {
+                        this.closeErrorPopover();
+                    }
 
+                    this.viewerState[key] = false;
+                }
+            }
+        });
+    }
     renderedCallback() {
         this.setFilterPopoverStyle();
         if (this.isSearching) {
@@ -182,7 +212,9 @@ export default class logViewer extends LightningElement {
             'Rerendering: activeFilters:',
             this.activeFilters,
             ' Prev filters: ',
-            this.previousFilters
+            this.previousFilters,
+            'state: ',
+            this.viewerState
         );
     }
 
@@ -192,6 +224,7 @@ export default class logViewer extends LightningElement {
 
     onLinesPerPageChange(event) {
         // console.log("Page Change: ", event.target.value);
+        this.manageViewerState('linesPerPage', true);
         let input = parseInt(event.target.value, 10);
         if (input >= 1 && input <= 1000) {
             // this.linesPerPageClass = "slds-input";
@@ -246,6 +279,10 @@ export default class logViewer extends LightningElement {
     // ################# FILTERS START#########################################################
 
     closeFilter() {
+        this.manageViewerState('filter', true);
+        if (this.ShowFilterSave === true) {
+            this.cancelFilterEdit();
+        }
         this.previousFilters = null;
         this.filterClass =
             'slds-panel slds-size_medium slds-panel_docked slds-panel_docked-right slds-panel_drawer filter-panel slds-hidden';
@@ -254,6 +291,7 @@ export default class logViewer extends LightningElement {
         if (this.filterClass.includes('slds-is-open')) {
             this.closeFilter();
         } else {
+            this.manageViewerState('filter', true);
             this.previousFilters = JSON.parse(
                 JSON.stringify(this.activeFilters)
             );
@@ -577,7 +615,15 @@ export default class logViewer extends LightningElement {
     //################################# SEARCH FUNCTIONALITY ##################################
     handleSearch() {
         this.isSearching = !this.isSearching;
+        this.manageViewerState('search', true);
         if (this.isSearching === false) {
+            this.processNoSearchRes();
+        }
+    }
+
+    closeSearch() {
+        if (this.isSearching) {
+            this.isSearching = false;
             this.processNoSearchRes();
         }
     }
@@ -695,6 +741,7 @@ export default class logViewer extends LightningElement {
     }
 
     resetViewer() {
+        this.manageViewerState('reset', true);
         this.dataInUse = this.fileData;
         this.isUnitView = false;
         this.unitViewBoundaries.startTime = 0;
@@ -708,6 +755,7 @@ export default class logViewer extends LightningElement {
         this.lvTitleHead = 'Log Viewer';
     }
     handleCallStackChange() {
+        this.manageViewerState('callStack', true);
         this.callStackToggle = !this.callStackToggle;
     }
     closeCallStack() {
@@ -721,6 +769,7 @@ export default class logViewer extends LightningElement {
     }
 
     handleErrorClick() {
+        this.manageViewerState('logErrors', true);
         this.errorPopoverOpen = !this.errorPopoverOpen;
         const button = this.template.querySelector('.error-btn');
         const { horizontal, vertical } = this.getWidgetPadding();
