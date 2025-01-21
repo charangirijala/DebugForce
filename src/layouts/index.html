@@ -15,6 +15,72 @@
             rel="stylesheet"
             href="$assetsDir/styles/salesforce-lightning-design-system.css"
         />
+
+        <style>
+            [data-theme='light'] {
+                --background-color-base: #eef4ff;
+                --text-color-base: #181818;
+                --brandBackgroundPrimary: #f0f6fc;
+                --thumbBG: var(--slds-g-color-neutral-base-100);
+                --scrollbarBG: var(--slds-c-card-color-border);
+                --border-width-base: 0.5rem;
+            }
+
+            [data-theme='dark'] {
+                --thumbBG: var(--slds-g-color-neutral-base-100);
+                --scrollbarBG: var(--slds-c-card-color-border);
+                --background-color-base: #0d1117;
+                --text-color-base: #f0f6fc;
+                --slds-g-color-neutral-base-10: #f0f6fc;
+                --slds-c-card-color-background: #0d1117;
+                --slds-c-card-color-border: #3d444d;
+                --slds-c-card-shadow: 0px 1px 0px 0px #01040966;
+                --slds-g-color-neutral-base-100: #010409;
+                --brandBackgroundPrimary: #0d1117 !important;
+                --slds-g-color-neutral-base-95: #0d1117;
+                --border-width-base: 0.0625rem;
+                --slds-g-color-border-base-1: #3d444d;
+                --slds-g-color-neutral-base-30: #9198a1;
+                --border-radius-base: 0.25rem;
+                --slds-c-input-color-border: #3d444d;
+                --slds-g-color-border-base-4: #3d444d;
+                --slds-g-color-neutral-base-50: #9198a1;
+            }
+
+            *::selection {
+                background: #0159e7;
+                color: #ffffff;
+            }
+            *::-moz-selection {
+                background: #0159e7;
+                color: #ffffff;
+            }
+            *::-webkit-selection {
+                background: #0159e7;
+                color: #ffffff;
+            }
+            html {
+                background: var(--background-color-base);
+            }
+            body {
+                background-color: var(--background-color-base) !important;
+                color: var(--text-color-base) !important;
+                scrollbar-width: thin;
+                scrollbar-color: var(--thumbBG) var(--scrollbarBG);
+            }
+
+            body::-webkit-scrollbar {
+                width: 11px;
+            }
+            body::-webkit-scrollbar-track {
+                background: var(--scrollbarBG);
+            }
+            body::-webkit-scrollbar-thumb {
+                background-color: var(--thumbBG);
+                border-radius: 6px;
+                border: 3px solid var(--scrollbarBG);
+            }
+        </style>
     </head>
     <body>
         {{{body}}} {{{lwr_resources}}}

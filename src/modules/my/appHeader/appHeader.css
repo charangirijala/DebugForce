@@ -1,0 +1,17 @@
+.slds-no-print {
+    /* position: fixed; */
+    width: 100%;
+    z-index: 1000;
+}
+
+.mainHeader {
+    width: 100%;
+    align-items: center;
+    border-bottom: none;
+}
+
+.navRight {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+}
