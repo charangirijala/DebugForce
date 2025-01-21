@@ -7,3 +7,7 @@ fs.cp(
         console.log('Done copying SLDS resources');
     }
 );
+
+fs.cp('./src/styles/styles.css', './src/assets', { recursive: true }, () => {
+    console.log('Done copying styles.css');
+});

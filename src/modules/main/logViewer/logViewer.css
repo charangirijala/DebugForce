@@ -51,7 +51,7 @@ a {
 :host {
     height: 100%;
     line-height: 1;
-    color: black;
+    color: var(--text-color-base);
     font-size: 0.8125rem;
 }
 /* tables still need 'cellspacing="0"' in the markup */
@@ -180,7 +180,8 @@ q {
     position: relative;
     overflow: visible;
     height: 100%;
-    border-bottom: 1px solid #c9c9c9;
+    border-bottom: var(--border-width-base) solid
+        var(--slds-c-card-color-border);
     padding-bottom: 0.75rem;
 }
 
@@ -193,7 +194,7 @@ q {
     font-size: 0.75rem;
     padding-top: 0.75rem;
     padding-bottom: 0.25rem;
-    color: #747474;
+    color: var(--slds-g-color-neutral-base-50);
     max-width: 12rem;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -258,7 +259,7 @@ q {
 
 .metrics-widget li .metricsValue {
     font-size: 1rem;
-    color: #032d60;
+    color: #0159e7;
 }
 .reportView
     .reportBuilderContainer
@@ -277,6 +278,10 @@ q {
     overflow: visible;
 }
 
+.dashboard-container {
+    border: var(--border-width-base) solid var(--slds-c-card-color-border);
+    border-radius: var(--border-radius-base);
+}
 table {
     margin: 0px;
     padding: 0px;
@@ -286,7 +291,7 @@ table {
 }
 th,
 td {
-    border-right: 0.5px solid #a8b8c7;
+    border-right: var(--border-width-base) solid var(--slds-c-card-color-border);
     padding-left: 6px;
     padding-right: 6px;
     padding-top: 6px;
@@ -296,11 +301,12 @@ td {
 }
 
 td {
-    border-bottom: 0.5px solid #a8b8c7;
+    border-bottom: var(--border-width-base) solid
+        var(--slds-c-card-color-border);
 }
 
 th {
-    background-color: #ecebea;
+    background-color: var(--slds-g-color-neutral-base-100);
 }
 
 .lightning-table-cell-measure-header-value {
@@ -309,12 +315,15 @@ th {
 }
 .slds-page-header {
     padding: 1rem 1rem;
-    border-bottom: 1px solid rgb(201, 201, 201);
-    border-radius: 0.25rem;
-    background: rgb(243, 243, 243);
+    /* border-bottom: 1px solid rgb(201, 201, 201); */
+    /* border-radius: 0.25rem; */
+    background: var(--slds-c-card-color-background);
     background-clip: padding-box;
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.1);
-    border: 1px solid rgb(201, 201, 201);
+    /* border: 1px solid rgb(201, 201, 201); */
+    border-top: none;
+    border-left: none;
+    border-right: none;
 }
 
 .widgets-inner {
@@ -350,14 +359,14 @@ th {
 }
 
 .line-number-text {
-    color: rgb(68, 68, 68);
+    color: var(--slds-g-color-neutral-base-50);
     font-weight: 400;
 }
 
 .line-text {
     line-height: normal;
-    color: #16315a;
-    fill: #16315a;
+    color: var(--text-color-base);
+    fill: var(--text-color-base);
     font-weight: 400;
 }
 
@@ -428,16 +437,16 @@ th {
 }
 
 .dashboard-widget {
-    background-color: white;
+    background-color: var(--slds-c-card-color-background);
 }
 
 .icon-active-filters {
     background-color: #0176d3;
     border-color: #0176d3;
-    color: #fff;
+    color: var(--text-color-base);
 }
 
 .widget-container {
-    border-right: 0.1px solid #c9c9c9;
+    border-right: 0.1px solid var(--slds-c-card-color-border);
     /* border-left: 0.1px solid grey; */
 }

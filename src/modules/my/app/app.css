@@ -1,0 +1,74 @@
+/* First Header */
+.first-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--slds-g-color-neutral-base-100);
+    color: var(--text-color-base);
+    padding: 10px 20px;
+    z-index: 1000;
+    height: 50px; /* Fixed height */
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease;
+}
+
+.first-header.hidden {
+    opacity: 0;
+    transform: translateY(-50px); /* Slide up */
+}
+
+/* Second Header */
+.second-header {
+    position: fixed;
+    top: 50px; /* Below the first header by default */
+    left: 0;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1b96ff;
+    color: var(--text-color-base);
+    /* padding: 10px 20px; */
+    z-index: 999;
+    height: 40px; /* Fixed height */
+    transition: top 0.3s ease; /* Smooth transition for position change */
+}
+
+.second-header.move-to-top {
+    top: 0; /* Move to the top when the first header is hidden */
+}
+
+/* Content Section */
+.content {
+    /* padding: 20px; */
+    padding-top: 90px; /* Reserve space for both headers (50px each) */
+    height: auto;
+    background-color: var(
+        --slds-c-card-color-background
+    ); /* Optional: To make content distinct */
+}
+
+/* Logo Animation */
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.move-to-second-header {
+    animation: moveLogo 0.5s ease forwards;
+}
+
+@keyframes moveLogo {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

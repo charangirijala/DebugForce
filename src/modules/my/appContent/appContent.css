@@ -1,17 +1,17 @@
 :host {
-    --brandBackgroundPrimary: rgb(238, 244, 255);
+    --brandBackgroundPrimary: var(--slds-c-card-color-background);
     --zIndexDefault: 1;
     --fullWidth: 100%;
 }
 .appContent {
     background-color: var(--brandBackgroundPrimary);
     z-index: var(--zIndexDefault);
-    top: 40px;
+    /* top: 40px; */
     width: var(--fullWidth);
 }
 
 .slds-template_default {
-    padding: 0.5rem;
+    padding: 1rem;
 }
 
 .oneCenterStage {

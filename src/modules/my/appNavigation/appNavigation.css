@@ -1,5 +1,5 @@
 .nav-item {
-    color: rgb(24, 24, 24);
+    color: var(--text-color-base);
 }
 img {
     width: 37px;
@@ -13,7 +13,8 @@ a:hover {
 }
 
 .slds-no-print {
-    position: fixed;
+    top: 50px;
+    /* position: fixed; */
     width: 100%;
     z-index: 1000;
 }
