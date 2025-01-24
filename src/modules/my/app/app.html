@@ -1,10 +1,27 @@
 <template>
     <div class="first-header">
-        <my-app-header></my-app-header>
+        <div class="logo first-header-logo">
+            <img
+                src="https://res.cloudinary.com/dxnxpimpv/image/upload/v1735788146/DebugForce_rpqubu.svg"
+                alt="Logo"
+                style="height: 22px"
+            />
+        </div>
+        <my-app-header theme={theme}></my-app-header>
     </div>
     <div class="second-header">
-        <my-app-navigation></my-app-navigation>
+        <div class="second-header-content">
+            <div class="logo-container">
+                <img
+                    class="logo move-to-second-header"
+                    src="https://res.cloudinary.com/dxnxpimpv/image/upload/v1735788146/DebugForce_rpqubu.svg"
+                    alt="Logo"
+                />
+            </div>
+            <my-app-navigation></my-app-navigation>
+        </div>
     </div>
+
     <div class="content">
         <my-app-content></my-app-content>
     </div>

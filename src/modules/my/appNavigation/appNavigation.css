@@ -18,3 +18,13 @@ a:hover {
     width: 100%;
     z-index: 1000;
 }
+
+.bar-styles {
+    padding: 0px;
+    height: 37px;
+    border-bottom: none;
+}
+
+.slds-context-bar__item:not(.slds-no-hover):hover:after {
+    background: none;
+}

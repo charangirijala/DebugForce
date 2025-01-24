@@ -9,9 +9,32 @@
     align-items: center;
     border-bottom: none;
 }
+.navLeft {
+    display: flex;
+}
 
 .navRight {
     display: flex;
     align-items: center;
-    justify-content: end;
+    justify-content: flex-end; /* Ensures the content is pushed to the right */
+    gap: 0.75rem; /* Adds spacing between the links */
+    margin-left: auto; /* Pushes the navRight to the far right */
+}
+
+.first-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between; /* Ensures proper alignment of left and right elements */
+    align-items: center;
+    background-color: var(--slds-g-color-neutral-base-100);
+    color: var(--text-color-base);
+    padding: 10px 20px;
+    z-index: 1000;
+    height: 50px; /* Fixed height */
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease;
 }
