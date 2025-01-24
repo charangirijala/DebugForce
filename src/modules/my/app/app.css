@@ -20,6 +20,9 @@
 .first-header.hidden {
     opacity: 0;
     transform: translateY(-50px); /* Slide up */
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease;
 }
 
 /* Second Header */
@@ -30,16 +33,16 @@
     width: 100%;
     justify-content: space-between;
     align-items: center;
-    background-color: #1b96ff;
-    color: var(--text-color-base);
+    background-color: var(--slds-g-color-neutral-base-100);
     /* padding: 10px 20px; */
     z-index: 999;
     height: 40px; /* Fixed height */
-    transition: top 0.3s ease; /* Smooth transition for position change */
+    transition: top 0.3s ease opacity 0.3s ease; /* Smooth transition for top and opacity */
 }
 
 .second-header.move-to-top {
     top: 0; /* Move to the top when the first header is hidden */
+    opacity: 1;
 }
 
 /* Content Section */
@@ -71,4 +74,99 @@
         transform: translateY(0);
         opacity: 1;
     }
+}
+
+/* Logo Animation */
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    transition:
+        transform 0.3s ease,
+        opacity 0.3s ease;
+}
+
+.move-to-second-header {
+    animation: moveLogoToSecondHeader 0.5s ease forwards;
+}
+
+@keyframes moveLogoToSecondHeader {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Second Header */
+.second-header {
+    position: fixed;
+    top: 50px;
+    left: 0;
+    width: 100%;
+    background-color: var(--slds-g-color-neutral-base-100);
+    border-bottom: 3px solid #1b96ff;
+    z-index: 999;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* Align content to the left */
+    padding: 0 20px; /* Add padding for spacing */
+    transition: top 0.3s ease;
+}
+
+.second-header-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem; /* Spacing between logo and navigation */
+}
+
+/* Logo Styling */
+.logo-container img {
+    height: 22px; /* Adjust size of the logo */
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.logo-container {
+    display: none;
+}
+/* Navigation Styling */
+my-app-navigation {
+    display: flex;
+    align-items: center;
+    transition:
+        transform 0.3s ease,
+        opacity 0.3s ease; /* Smooth transform and opacity */
+}
+
+.logo {
+    transition:
+        transform 0.3s ease,
+        opacity 0.3s ease;
+}
+
+.logo-container {
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease;
+}
+
+@keyframes smoothSlide {
+    from {
+        transform: translateY(-10px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.logo-container,
+my-app-navigation {
+    animation: smoothSlide 0.3s ease forwards;
 }

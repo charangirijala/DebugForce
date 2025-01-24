@@ -23,6 +23,8 @@ export function initTheme() {
                 applyTheme(event.matches ? 'dark' : 'light');
             });
     }
+
+    return theme;
 }
 
 export function saveThemePreference(theme) {
